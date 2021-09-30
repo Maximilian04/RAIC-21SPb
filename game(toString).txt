@@ -4,85 +4,78 @@ currentTick: 0,
 maxTickCount: 1000,
 players: [ Player { score: 0 }, Player { score: 0 } ],
 planets: [
- Planet { x: 6, y: 6, harvestableResource: STONE, workerGroups: [ WorkerGroup { playerIndex: 0, number: 1000 } ], resour
-ces: {  }, building: Building { buildingType: QUARRY, health: 100, workDone: 0 } }, Planet { x: 4, y: 9, harvestableReso
-urce: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 0, y: 19, harvestableResource: none, work
-erGroups: [  ], resources: {  }, building: none }, Planet { x: 9, y: 16, harvestableResource: STONE, workerGroups: [  ],
- resources: {  }, building: none }, Planet { x: 7, y: 18, harvestableResource: none, workerGroups: [  ], resources: {  }
-, building: none }, Planet { x: 11, y: 16, harvestableResource: ORE, workerGroups: [  ], resources: {  }, building: none
- }, Planet { x: 4, y: 16, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x:
-1, y: 7, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 4, y: 19, harvest
-ableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 5, y: 26, harvestableResource: no
-ne, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 1, y: 12, harvestableResource: none, workerGroups
-: [  ], resources: {  }, building: none }, Planet { x: 7, y: 23, harvestableResource: none, workerGroups: [  ], resource
-s: {  }, building: none }, Planet { x: 10, y: 15, harvestableResource: none, workerGroups: [  ], resources: {  }, buildi
-ng: none }, Planet { x: 2, y: 28, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Plan
-et { x: 6, y: 17, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 8, y: 1,
- harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 5, y: 8, harvestableResou
-rce: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 1, y: 27, harvestableResource: none, worke
-rGroups: [  ], resources: {  }, building: none }, Planet { x: 2, y: 5, harvestableResource: none, workerGroups: [  ], re
-sources: {  }, building: none }, Planet { x: 10, y: 22, harvestableResource: none, workerGroups: [  ], resources: {  },
-building: none }, Planet { x: 2, y: 23, harvestableResource: ORGANICS, workerGroups: [  ], resources: {  }, building: no
-ne }, Planet { x: 0, y: 1, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x:
- 13, y: 7, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 5, y: 15, harve
-stableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 11, y: 13, harvestableResource:
- ORE, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 4, y: 29, harvestableResource: none, workerGrou
-ps: [  ], resources: {  }, building: none }, Planet { x: 11, y: 3, harvestableResource: STONE, workerGroups: [  ], resou
-rces: {  }, building: none }, Planet { x: 13, y: 4, harvestableResource: none, workerGroups: [  ], resources: {  }, buil
-ding: none }, Planet { x: 1, y: 21, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Pl
-anet { x: 0, y: 17, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 7, y:
-14, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 4, y: 23, harvestableR
-esource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 8, y: 9, harvestableResource: none, wo
-rkerGroups: [  ], resources: {  }, building: none }, Planet { x: 7, y: 21, harvestableResource: ORGANICS, workerGroups:
-[  ], resources: {  }, building: none }, Planet { x: 12, y: 1, harvestableResource: none, workerGroups: [  ], resources:
- {  }, building: none }, Planet { x: 4, y: 1, harvestableResource: none, workerGroups: [  ], resources: {  }, building:
-none }, Planet { x: 14, y: 10, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet
-{ x: 11, y: 19, harvestableResource: SAND, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 0, y: 9, h
-arvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 13, y: 23, harvestableResou
-rce: SAND, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 12, y: 28, harvestableResource: none, work
-erGroups: [  ], resources: {  }, building: none }, Planet { x: 2, y: 10, harvestableResource: none, workerGroups: [  ],
-resources: {  }, building: none }, Planet { x: 3, y: 3, harvestableResource: none, workerGroups: [  ], resources: {  },
-building: none }, Planet { x: 9, y: 10, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }
-, Planet { x: 20, y: 19, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 2
-6, y: 26, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 27, y: 19, harve
-stableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 17, y: 1, harvestableResource:
-none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 16, y: 6, harvestableResource: SAND, workerGrou
-ps: [  ], resources: {  }, building: none }, Planet { x: 29, y: 20, harvestableResource: none, workerGroups: [  ], resou
-rces: {  }, building: none }, Planet { x: 18, y: 10, harvestableResource: SAND, workerGroups: [  ], resources: {  }, bui
-lding: none }, Planet { x: 15, y: 19, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none },
-Planet { x: 25, y: 28, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 17,
- y: 28, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 22, y: 8, harvesta
-bleResource: ORGANICS, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 21, y: 20, harvestableResource
-: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 25, y: 6, harvestableResource: none, workerGr
-oups: [  ], resources: {  }, building: none }, Planet { x: 22, y: 15, harvestableResource: none, workerGroups: [  ], res
-ources: {  }, building: none }, Planet { x: 29, y: 12, harvestableResource: none, workerGroups: [  ], resources: {  }, b
-uilding: none }, Planet { x: 28, y: 8, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none },
- Planet { x: 16, y: 25, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 18
-, y: 26, harvestableResource: STONE, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 25, y: 0, harves
-tableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 18, y: 16, harvestableResource:
-ORE, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 24, y: 14, harvestableResource: none, workerGrou
-ps: [  ], resources: {  }, building: none }, Planet { x: 16, y: 22, harvestableResource: none, workerGroups: [  ], resou
-rces: {  }, building: none }, Planet { x: 29, y: 28, harvestableResource: none, workerGroups: [  ], resources: {  }, bui
-lding: none }, Planet { x: 27, y: 6, harvestableResource: ORGANICS, workerGroups: [  ], resources: {  }, building: none
-}, Planet { x: 19, y: 7, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 2
-7, y: 24, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 28, y: 2, harves
-tableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 24, y: 21, harvestableResource:
-none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 21, y: 28, harvestableResource: none, workerGro
-ups: [  ], resources: {  }, building: none }, Planet { x: 23, y: 12, harvestableResource: none, workerGroups: [  ], reso
-urces: {  }, building: none }, Planet { x: 27, y: 1, harvestableResource: none, workerGroups: [  ], resources: {  }, bui
-lding: none }, Planet { x: 19, y: 14, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none },
-Planet { x: 22, y: 6, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 28,
-y: 17, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 24, y: 3, harvestab
-leResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 25, y: 10, harvestableResource: non
-e, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 28, y: 22, harvestableResource: none, workerGroups
-: [  ], resources: {  }, building: none }, Planet { x: 25, y: 13, harvestableResource: none, workerGroups: [  ], resourc
-es: {  }, building: none }, Planet { x: 18, y: 13, harvestableResource: ORE, workerGroups: [  ], resources: {  }, buildi
-ng: none }, Planet { x: 22, y: 11, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Pla
-net { x: 20, y: 13, harvestableResource: STONE, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 29, y
-: 10, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 25, y: 20, harvestab
-leResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 23, y: 23, harvestableResource: STO
-NE, workerGroups: [ WorkerGroup { playerIndex: 1, number: 1000 } ], resources: {  }, building: Building { buildingType:
-QUARRY, health: 100, workDone: 0 } } ],
+ Planet { x: 11, y: 9, harvestableResource: STONE, workerGroups: [ WorkerGroup { playerIndex: 0, number: 1000 } ], resou
+rces: {  }, building: Building { buildingType: QUARRY, health: 100, workDone: 0 } }, Planet { x: 9, y: 8, harvestableRes
+ource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 0, y: 15, harvestableResource: SAND, wor
+kerGroups: [  ], resources: {  }, building: none }, Planet { x: 10, y: 19, harvestableResource: none, workerGroups: [  ]
+, resources: {  }, building: none }, Planet { x: 5, y: 26, harvestableResource: none, workerGroups: [  ], resources: {
+}, building: none }, Planet { x: 1, y: 5, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none
+ }, Planet { x: 14, y: 29, harvestableResource: STONE, workerGroups: [  ], resources: {  }, building: none }, Planet { x
+: 11, y: 22, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 4, y: 23, har
+vestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 8, y: 28, harvestableResource
+: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 13, y: 18, harvestableResource: none, workerG
+roups: [  ], resources: {  }, building: none }, Planet { x: 3, y: 0, harvestableResource: ORE, workerGroups: [  ], resou
+rces: {  }, building: none }, Planet { x: 3, y: 16, harvestableResource: none, workerGroups: [  ], resources: {  }, buil
+ding: none }, Planet { x: 9, y: 20, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Pl
+anet { x: 6, y: 6, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 11, y:
+27, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 6, y: 25, harvestableR
+esource: STONE, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 3, y: 14, harvestableResource: SAND,
+workerGroups: [  ], resources: {  }, building: none }, Planet { x: 5, y: 7, harvestableResource: none, workerGroups: [
+], resources: {  }, building: none }, Planet { x: 1, y: 18, harvestableResource: none, workerGroups: [  ], resources: {
+ }, building: none }, Planet { x: 3, y: 12, harvestableResource: ORGANICS, workerGroups: [  ], resources: {  }, building
+: none }, Planet { x: 6, y: 28, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet
+ { x: 6, y: 16, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 2, y: 23,
+harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 10, y: 4, harvestableResou
+rce: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 7, y: 13, harvestableResource: none, worke
+rGroups: [  ], resources: {  }, building: none }, Planet { x: 11, y: 7, harvestableResource: ORE, workerGroups: [  ], re
+sources: {  }, building: none }, Planet { x: 7, y: 29, harvestableResource: none, workerGroups: [  ], resources: {  }, b
+uilding: none }, Planet { x: 7, y: 2, harvestableResource: SAND, workerGroups: [  ], resources: {  }, building: none },
+Planet { x: 9, y: 17, harvestableResource: SAND, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 3, y
+: 29, harvestableResource: ORGANICS, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 4, y: 2, harvest
+ableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 7, y: 24, harvestableResource: no
+ne, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 1, y: 9, harvestableResource: ORE, workerGroups:
+[  ], resources: {  }, building: none }, Planet { x: 13, y: 16, harvestableResource: none, workerGroups: [  ], resources
+: {  }, building: none }, Planet { x: 1, y: 28, harvestableResource: none, workerGroups: [  ], resources: {  }, building
+: none }, Planet { x: 14, y: 14, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Plane
+t { x: 5, y: 29, harvestableResource: ORE, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 9, y: 2, h
+arvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 12, y: 12, harvestableResou
+rce: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 17, y: 17, harvestableResource: none, work
+erGroups: [  ], resources: {  }, building: none }, Planet { x: 20, y: 27, harvestableResource: none, workerGroups: [  ],
+ resources: {  }, building: none }, Planet { x: 24, y: 0, harvestableResource: ORE, workerGroups: [  ], resources: {  },
+ building: none }, Planet { x: 15, y: 15, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none
+ }, Planet { x: 28, y: 1, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x:
+16, y: 13, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 28, y: 20, harv
+estableResource: ORE, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 22, y: 5, harvestableResource:
+none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 25, y: 27, harvestableResource: none, workerGro
+ups: [  ], resources: {  }, building: none }, Planet { x: 26, y: 0, harvestableResource: ORGANICS, workerGroups: [  ], r
+esources: {  }, building: none }, Planet { x: 20, y: 12, harvestableResource: SAND, workerGroups: [  ], resources: {  },
+ building: none }, Planet { x: 22, y: 27, harvestableResource: SAND, workerGroups: [  ], resources: {  }, building: none
+ }, Planet { x: 22, y: 0, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x:
+18, y: 22, harvestableResource: ORE, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 22, y: 16, harve
+stableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 19, y: 25, harvestableResource:
+ none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 27, y: 6, harvestableResource: none, workerGro
+ups: [  ], resources: {  }, building: none }, Planet { x: 23, y: 13, harvestableResource: none, workerGroups: [  ], reso
+urces: {  }, building: none }, Planet { x: 23, y: 1, harvestableResource: none, workerGroups: [  ], resources: {  }, bui
+lding: none }, Planet { x: 26, y: 17, harvestableResource: ORGANICS, workerGroups: [  ], resources: {  }, building: none
+ }, Planet { x: 28, y: 11, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x:
+ 24, y: 22, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 26, y: 15, har
+vestableResource: SAND, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 23, y: 4, harvestableResource
+: STONE, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 18, y: 2, harvestableResource: none, workerG
+roups: [  ], resources: {  }, building: none }, Planet { x: 23, y: 23, harvestableResource: none, workerGroups: [  ], re
+sources: {  }, building: none }, Planet { x: 20, y: 9, harvestableResource: none, workerGroups: [  ], resources: {  }, b
+uilding: none }, Planet { x: 26, y: 13, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }
+, Planet { x: 26, y: 29, harvestableResource: ORE, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 16
+, y: 11, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 21, y: 1, harvest
+ableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 25, y: 6, harvestableResource: no
+ne, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 18, y: 7, harvestableResource: none, workerGroups
+: [  ], resources: {  }, building: none }, Planet { x: 15, y: 0, harvestableResource: STONE, workerGroups: [  ], resourc
+es: {  }, building: none }, Planet { x: 28, y: 24, harvestableResource: none, workerGroups: [  ], resources: {  }, build
+ing: none }, Planet { x: 24, y: 3, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Pla
+net { x: 19, y: 10, harvestableResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 29, y:
+ 14, harvestableResource: SAND, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 20, y: 21, harvestabl
+eResource: none, workerGroups: [  ], resources: {  }, building: none }, Planet { x: 18, y: 20, harvestableResource: STON
+E, workerGroups: [ WorkerGroup { playerIndex: 1, number: 1000 } ], resources: {  }, building: Building { buildingType: Q
+UARRY, health: 100, workDone: 0 } } ],
 
 flyingWorkerGroups: [  ],
 maxFlyingWorkerGroups: 100,
@@ -92,20 +85,20 @@ buildingProperties: {
 
     QUARRY: BuildingProperties {                buildResources: { STONE: 50 }, maxHealth: 100, maxWorkers: 100, workResources: {  },                                    produceWorker: 0, produceResource: STONE, produceAmount: 1, produceScore: 1, harvest: 1, workAmount: 2 },
 
-    MINES: BuildingProperties {                 buildResources: { STONE: 50 }, maxHealth: 100, maxWorkers: 100, workResources: {  },                                    produceWorker: 0, produceResource: ORE, produceAmount: 1, produceScore: 1, harvest: 1, workAmount: 2 },
+    MINES: BuildingProperties {                 buildResources: { STONE: 50 }, maxHealth: 100, maxWorkers: 100, workResources: {  },                                    produceWorker: 0, produceResource: ORE, produceAmount: 1, produceScore: 2, harvest: 1, workAmount: 2 },
 
-    FARM: BuildingProperties {                  buildResources: { STONE: 50 }, maxHealth: 100, maxWorkers: 100, workResources: {  },                                    produceWorker: 0, produceResource: ORGANICS, produceAmount: 1, produceScore: 1, harvest: 1, workAmount: 2 },
+    FARM: BuildingProperties {                  buildResources: { STONE: 50 }, maxHealth: 100, maxWorkers: 100, workResources: {  },                                    produceWorker: 0, produceResource: ORGANICS, produceAmount: 1, produceScore: 8, harvest: 1, workAmount: 2 },
 
-    FURNACE: BuildingProperties {               buildResources: { STONE: 100 }, maxHealth: 100, maxWorkers: 100, workResources: { SAND: 2 },                            produceWorker: 0, produceResource: SILICON, produceAmount: 1, produceScore: 2, harvest: 0, workAmount: 2 },
+    FURNACE: BuildingProperties {               buildResources: { STONE: 100 }, maxHealth: 100, maxWorkers: 20, workResources: { SAND: 2 },                             produceWorker: 0, produceResource: SILICON, produceAmount: 1, produceScore: 40, harvest: 0, workAmount: 2 },
 
-    REPLICATOR: BuildingProperties {            buildResources: { STONE: 200 }, maxHealth: 100, maxWorkers: 100, workResources: { CHIP: 2, METAL: 2, ACCUMULATOR: 1 },  produceWorker: 1, produceResource: none, produceAmount: 1, produceScore: 15, harvest: 0, workAmount: 5 },
+    REPLICATOR: BuildingProperties {            buildResources: { STONE: 200 }, maxHealth: 100, maxWorkers: 25, workResources: { METAL: 2, ACCUMULATOR: 1, CHIP: 2 },   produceWorker: 1, produceResource: none, produceAmount: 1, produceScore: 800, harvest: 0, workAmount: 5 },
 
-    ACCUMULATOR_FACTORY: BuildingProperties {   buildResources: { STONE: 100 }, maxHealth: 100, maxWorkers: 100, workResources: { METAL: 2, PLASTIC: 2 },               produceWorker: 0, produceResource: ACCUMULATOR, produceAmount: 1, produceScore: 5, harvest: 0, workAmount: 2},
+    ACCUMULATOR_FACTORY: BuildingProperties {   buildResources: { STONE: 100 }, maxHealth: 100, maxWorkers: 10, workResources: { PLASTIC: 2, METAL: 2 },                produceWorker: 0, produceResource: ACCUMULATOR, produceAmount: 1, produceScore: 400, harvest: 0, workAmount: 2 },
 
-    FOUNDRY: BuildingProperties {               buildResources: { STONE: 100 }, maxHealth: 100, maxWorkers: 100, workResources: { ORE: 2 },                             produceWorker: 0, produceResource: METAL, produceAmount: 1, produceScore: 2, harvest: 0, workAmount: 2 },
+    FOUNDRY: BuildingProperties {               buildResources: { STONE: 100 }, maxHealth: 100, maxWorkers: 20, workResources: { ORE: 2 },                              produceWorker: 0, produceResource: METAL, produceAmount: 1, produceScore: 20, harvest: 0, workAmount: 2 },
 
-    CAREER: BuildingProperties {                buildResources: { STONE: 50 }, maxHealth: 100, maxWorkers: 100, workResources: {  },                                    produceWorker: 0, produceResource: SAND, produceAmount: 1, produceScore: 1, harvest: 1, workAmount: 2 },
+    CAREER: BuildingProperties {                buildResources: { STONE: 50 }, maxHealth: 100, maxWorkers: 100, workResources: {  },                                    produceWorker: 0, produceResource: SAND, produceAmount: 1, produceScore: 4, harvest: 1, workAmount: 2 } } }
 
-    BIOREACTOR: BuildingProperties {            buildResources: { STONE: 100 }, maxHealth: 100, maxWorkers: 100, workResources: { ORGANICS: 2 },                        produceWorker: 0, produceResource: PLASTIC, produceAmount: 1, produceScore: 2, harvest: 0, workAmount: 2 },
+    BIOREACTOR: BuildingProperties {            buildResources: { STONE: 100 }, maxHealth: 100, maxWorkers: 20, workResources: { ORGANICS: 2 },                         produceWorker: 0, produceResource: PLASTIC, produceAmount: 1, produceScore: 80, harvest: 0, workAmount: 2 },
 
-    CHIP_FACTORY: BuildingProperties {          buildResources: { STONE: 100 }, maxHealth: 100, maxWorkers: 100, workResources: { SILICON: 2, METAL: 2 },               produceWorker: 0, produceResource: CHIP, produceAmount: 1, produceScore: 5, harvest: 0, workAmount: 2 } } }
+    CHIP_FACTORY: BuildingProperties {          buildResources: { STONE: 100 }, maxHealth: 100, maxWorkers: 10, workResources: { METAL: 2, SILICON: 2 },                produceWorker: 0, produceResource: CHIP, produceAmount: 1, produceScore: 200, harvest: 0, workAmount: 2 },
