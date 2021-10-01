@@ -6,11 +6,13 @@
 
 using namespace std;
 
-#define NUM_TYPES 20 // number of types of means of production
-#define NUM_RESES 10 // number of types of means of production
+#define NUM_TYPES 24 // number of types of means of production
+#define NUM_RESES 14 // number of types of means of production
 
 #define SQUAD_SIZE 10
 #define BUILD_KOEF 0.5
+
+#define PRICE_STEP 1
 
 class Mean { // class for contain information about means of production like robots, resources, buildings
 public:
@@ -20,17 +22,20 @@ public:
 	static model::Resource t2r(Type t); // translate Mean::Type to model::Resource
 	static Type b2t(model::BuildingType t); // translate model::BuildingType to Mean::Type
 	static Type r2t(model::Resource t); // translate model::Resource to Mean::Type
+	static Type harvest_r2t(model::Resource t); // translate model::Resource to Mean::Type
 	static Type eth2t(model::BuildingType t); // DANGEROUS translate model::BuildingType to Mean::Type
 	static Type eth2t(model::Resource t); // DANGEROUS translate model::Resource to Mean::Type
 	static Type eth2t(int t); // DANGEROUS translate int to Mean::Type !!!!!!USE ONLY WITH -1!!!!!!
-	static vector<Type> getParents(Type t); //TODO реализовать
+	static Type getParents(Type t); //TODO ONLY ONE RES
+	static Type getRightBuild(Type t); //
+	static Type getRightRes(Type t); //
 	static vector<Type> getChildren(Type t); //TODO реализовать
 	static int type_table[NUM_TYPES][NUM_TYPES]; // таблица количеств необходимых ресурсов
 	static bool isInitialised; //
 	static void initialise(const model::Game& game);
 
 	static const vector<Type> res_list; // list of resources
-	static const vector<double> res_price_list; // list of minimum prices of resources
+	static const vector<double> res_price_list;
 private:
 };
 
@@ -65,13 +70,12 @@ class PlSub { // planet - subject of trade
 public:
 	int x, y;
 	int id;
-	Mean::Type mean; // building or harvestableResource
+	Mean::Type mean; // building
 
 	///vector<Supply> supplies;
 	///vector<Demand> demands;
 
-	double prices_sell[NUM_RESES];
-	double prices_buy[NUM_RESES];
+	double prices[NUM_TYPES]; // only NUM_RESES makes sense
 
 	PlSub(); // init with -1
 	PlSub(int x, int y, int id, Mean::Type mean);
@@ -86,13 +90,16 @@ public:
 	//bool isConcluded = false;
 };
 
+vector<PlSub> plSubs; // all "our" planets
+vector<bool> plZones;
+
 model::Action MyStrategy::getAction(const model::Game& game) {
 	if (!Mean::isInitialised) { // Initialising
+		Mean::isInitialised = true;
 		Mean::initialise(game);
+		plZones = vector<bool>(game.planets.size(), false);
 	}
 
-	static vector<PlSub> plSubs; // all "our" planets
-	static vector<bool> plZones(game.planets.size(), false);
 
 	// ----- generating list of subjects -----
 	for (int id = 0; id < game.planets.size(); ++id) {
@@ -103,76 +110,70 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 				if (game.planets[id].building.has_value()) {
 					plSubs.push_back(PlSub(game.planets[id].x, game.planets[id].y, id,
 										   Mean::b2t(game.planets[id].building.value().buildingType)));
-				} else if (game.planets[id].harvestableResource.has_value()) {
-					plSubs.push_back(PlSub(game.planets[id].x, game.planets[id].y, id,
-										   Mean::r2t(game.planets[id].harvestableResource.value())));
 				} else {
 					plSubs.push_back(PlSub(game.planets[id].x, game.planets[id].y, id, Mean::eth2t(-1)));
 				}
-			} else {
-				if (plZones[id]) {
-					plZones[id] = false;
+			}
+		} else {
+			if (plZones[id]) {
+				plZones[id] = false;
 
-					for (int i = plSubs.size() - 1; i >= 0; --i) {
-						if (plSubs[i].id == id) {
-							plSubs.erase(plSubs.begin() + i);
-							break;
-						}
+				for (int i = plSubs.size() - 1; i >= 0; --i) {
+					if (plSubs[i].id == id) {
+						plSubs.erase(plSubs.begin() + i);
+						break;
 					}
 				}
 			}
 		}
 	}
 
-	vector<Supply> supplyMarket;
-	vector<Demand> demandMarket;
-
-	// ----- generating supplies -----
+	// ----- correcting prices -----
 	for (PlSub& subj: plSubs) {
 		unordered_map<model::Resource, int> resources = game.planets[subj.id].resources;
+		Mean::Type profRes = Mean::getRightRes(subj.mean);
+		bool hasProfRes = false;
 
 		for (pair<model::Resource, int> resource: resources) {
-			while (resource.second >= SQUAD_SIZE) {
-				resources[resource.first] -= SQUAD_SIZE;
-				supplyMarket.push_back(Supply(subj, Mean::r2t(resource.first))); //TODO set price!!!
-			}
-		}
-	}
-
-	// ----- generating demands -----
-	for (PlSub& subj: plSubs) {
-		if (game.planets[subj.id].building.has_value()) {
-			if (game.planets[subj.id].harvestableResource.has_value()) { // building+resource
-
-			} else { // building
-
-			}
-		} else {
-			if (game.planets[subj.id].harvestableResource.has_value()) { // resource
-
-			} else { // nothing
-
-			}
-		}
-	}
-
-	// ----- generating list of deals -----
-	vector<Deal> dealList;
-	for (int s = 0; s < supplyMarket.size(); ++s) {
-		for (int d = 0; d < demandMarket.size(); ++d) {
-			if (demandMarket[d].isInternal) {
-				dealList.push_back({&demandMarket[d], nullptr});
-			} else {
-				if (demandMarket[d].type == supplyMarket[s].type) {
-					dealList.push_back({&demandMarket[d], &supplyMarket[s]});
+			if (resource.first == model::Resource::STONE) {
+				if (subj.mean == Mean::eth2t(-1)) {
+					if (game.planets[subj.id].harvestableResource.has_value() /*!game.planets[subj.id].workerGroups.empty()*/) {
+						subj.prices[(int) Mean::r2t(resource.first)] += PRICE_STEP;
+					} else {
+						subj.prices[(int) Mean::r2t(resource.first)] -= PRICE_STEP;
+					}
+				} else {
+					subj.prices[(int) Mean::r2t(resource.first)] -= PRICE_STEP;
 				}
+			} else if (Mean::r2t(resource.first) == profRes) {
+				hasProfRes = true;
+				if (!game.planets[subj.id].workerGroups.empty() &&
+					game.planets[subj.id].workerGroups[0].number >= 100) { // todo change to maxWorkers
+					subj.prices[(int) Mean::r2t(resource.first)] -= PRICE_STEP;
+				} else {
+					subj.prices[(int) Mean::r2t(resource.first)] += PRICE_STEP;
+				}
+			} else {
+				subj.prices[(int) Mean::r2t(resource.first)] -= PRICE_STEP;
 			}
+		}
+
+		if (profRes != Mean::eth2t(-1) && !hasProfRes) {
+			subj.prices[(int) profRes] += PRICE_STEP;
+		}
+
+		if (subj.mean == Mean::eth2t(-1) && !game.planets[subj.id].workerGroups.empty()) {
+
+			subj.prices[0] += 0.5 * PRICE_STEP;
 		}
 	}
 
 	// ----- simulating marketplace with robots -----
 	vector<model::MoveAction> moveActionsR;
+	vector<model::BuildingAction> buildActionsR;
 	for (int id = 0; id < game.planets.size(); ++id) { // todo нужно как-то тасовать порядок планет мб?
+//		cout << "plId " << id << endl;
+
 		if (game.planets[id].workerGroups.empty() || game.planets[id].workerGroups[0].playerIndex != game.myIndex) {
 			continue;
 		}
@@ -180,57 +181,104 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		int x = game.planets[id].x;
 		int y = game.planets[id].y;
 		for (int robotNum = game.planets[id].workerGroups[0].number; robotNum >= SQUAD_SIZE; robotNum -= SQUAD_SIZE) {
-			int bestDeal = -1;
-			double bestPrice = 0; // price per tick!
-			for (int i = 0; i < dealList.size(); ++i) {
-				if (dealList[i].demand->isAnswered) {
-					dealList.erase(dealList.begin() + i);
-					--i;
-					continue;
-				}
-				double price;
-				if (dealList[i].supply) { // external demand
-					if (dealList[i].supply->isAnswered) {
-						dealList.erase(dealList.begin() + i);
-						--i;
-						continue;
+			pair<PlSub*, Mean::Type> bestBegin, bestEnd;
+			double bestDeltaPrice = -1;
+
+			for (int beginPl = 0; beginPl < plSubs.size(); ++beginPl) {
+				for (int endPl = 0; endPl < plSubs.size(); ++endPl) {
+					double targetDist = (abs(game.planets[id].x - plSubs[beginPl].x) +
+										 abs(game.planets[id].y - plSubs[beginPl].y));
+
+					PlSub& beg = plSubs[beginPl];
+					PlSub& eed = plSubs[endPl];
+					if (endPl == beginPl) { // переработка
+						if (game.planets[plSubs[endPl].id].building.has_value()) { // если есть постройка
+							Mean::Type build = Mean::b2t(game.planets[plSubs[endPl].id].building.value().buildingType);
+							for (Mean::Type res: Mean::res_list) {
+								if (build == Mean::getRightBuild(res)) {
+
+									double deltaPrice = plSubs[endPl].prices[(int) res] -
+														plSubs[endPl].prices[(int) Mean::getParents(res)] -
+														0.01 * targetDist;
+
+									int temp = (int) res;
+									int tempp = (int) Mean::getParents(res);
+									double temp2 = plSubs[endPl].prices[(int) res];
+									double temp3 = plSubs[endPl].prices[(int) Mean::getParents(res)];
+
+									if (deltaPrice > bestDeltaPrice) {
+										bestDeltaPrice = deltaPrice;
+
+										bestBegin = {&plSubs[endPl], Mean::getParents(res)};
+										bestEnd = {&plSubs[endPl], res};
+									}
+									break;
+								}
+							}
+						} else { // если нет постройки
+							for (Mean::Type res: Mean::res_list) {
+								double deltaPrice = plSubs[endPl].prices[(int) res] -
+													plSubs[endPl].prices[(int) Mean::getParents(res)] -
+													0.01 * targetDist;
+
+								if (deltaPrice > bestDeltaPrice) {
+									bestDeltaPrice = deltaPrice;
+
+									bestBegin = {&plSubs[endPl], Mean::getParents(res)};
+									bestEnd = {&plSubs[endPl], res};
+								}
+							}
+						}
+					} else { // доставка
+						for (Mean::Type res: Mean::res_list) {
+							double deltaPrice = plSubs[endPl].prices[(int) res] -
+												plSubs[beginPl].prices[(int) res] -
+												targetDist;
+
+							if (deltaPrice > bestDeltaPrice) {
+								bestDeltaPrice = deltaPrice;
+
+								bestBegin = {&plSubs[beginPl], res};
+								bestEnd = {&plSubs[endPl], res};
+							}
+						}
 					}
-
-					price = dealList[i].demand->p / (abs(dealList[i].demand->x - x) + abs(dealList[i].demand->y - y) +
-													 abs(dealList[i].demand->x - dealList[i].supply->x) +
-													 abs(dealList[i].demand->y - dealList[i].supply->y));
-				} else { // internal demand
-					price = dealList[i].demand->p - 0.0001 *
-													(abs(dealList[i].demand->x - x) + abs(dealList[i].demand->y - y));
-				}
-
-				if (price > bestPrice) {
-					bestPrice = price;
-					bestDeal = i;
 				}
 			}
-			if (bestDeal == -1) break;
 
-			moveActionsR.push_back(model::MoveAction(id,
-													 dealList[bestDeal].supply ? dealList[bestDeal].supply->author.id
-																			   : dealList[bestDeal].demand->author.id,
-													 SQUAD_SIZE, optional<model::Resource>()));
-			dealList[bestDeal].demand->isAnswered = true;
-			if (dealList[bestDeal].supply) {
-				dealList[bestDeal].supply->isAnswered = true;
-				dealList[bestDeal].supply->p = dealList[bestDeal].demand->p;
+//			cout << bestBegin.first << " resSs " << bestEnd.first << endl;
+
+			if (bestDeltaPrice == -1 || bestBegin.first == nullptr || bestEnd.first == nullptr) {
+				cout << "KARAUL" << endl;
+				continue;
 			}
 
-			dealList.erase(dealList.begin() + bestDeal);
-		}
-	}
+			if (bestBegin.first == bestEnd.first) { // переработка
+				if (game.planets[bestEnd.first->id].building.has_value()) { // если есть постройка
+					if (bestEnd.first->id == id) {
 
-	// ----- changing prices -----
-	for (Demand demand: demandMarket) {
-		if (demand.isAnswered) {
-
-		} else {
-
+					} else {
+						moveActionsR.push_back(model::MoveAction(id, bestEnd.first->id, SQUAD_SIZE,
+																 optional<model::Resource>()));
+					}
+				} else { // если нет постройки
+					if (bestEnd.first->id == id) {
+						buildActionsR.push_back(model::BuildingAction(id, optional<model::BuildingType>(
+								Mean::t2b(Mean::getRightBuild(bestEnd.second)))));
+					} else {
+						moveActionsR.push_back(model::MoveAction(id, bestEnd.first->id, SQUAD_SIZE,
+																 optional<model::Resource>()));
+					}
+				}
+			} else { // доставка
+				if (bestBegin.first->id == id) {
+					moveActionsR.push_back(model::MoveAction(id, bestEnd.first->id, SQUAD_SIZE,
+															 optional<model::Resource>(Mean::t2r(bestEnd.second))));
+				} else {
+					moveActionsR.push_back(model::MoveAction(id, bestBegin.first->id, SQUAD_SIZE,
+															 optional<model::Resource>()));
+				}
+			}
 		}
 	}
 
@@ -258,13 +306,13 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		}
 	}
 
-	return model::Action(moveActions, buildingActions);
+	return model::Action(moveActionsR, buildActionsR);
 }
 
 MyStrategy::MyStrategy() {}
 
 enum class Mean::Type { // it's necessary, what STONE has 0 number!!!
-	none = -1,                // it's not true value!!!
+	none = -1,              // it's not true value!!!
 	STONE = 0,              //prt
 
 	QUARRY,                 //bld
@@ -290,6 +338,11 @@ enum class Mean::Type { // it's necessary, what STONE has 0 number!!!
 
 	REPLICATOR,             //bld
 	ROBOT,                  //prt
+
+	HARV_STONE,            //prt	it's not true value!!!
+	HARV_ORE,              //prt	it's not true value!!!
+	HARV_SAND,             //prt	it's not true value!!!
+	HARV_ORGANICS,         //prt	it's not true value!!!
 }; // it's necessary, what STONE has 0 number!!!
 //!!!undefined behaviour with incorrect t!!!
 model::BuildingType Mean::t2b(Mean::Type t) {
@@ -356,6 +409,9 @@ model::Resource Mean::t2r(Mean::Type t) {
 			return model::Resource::ACCUMULATOR;
 			break;
 	}
+
+	cout << "I've returned STONE, but I'm objecting" << endl;
+	return model::Resource::STONE;
 } //
 Mean::Type Mean::b2t(model::BuildingType t) {
 	switch (t) {
@@ -421,6 +477,23 @@ Mean::Type Mean::r2t(model::Resource t) {
 			return Mean::Type::ACCUMULATOR;
 			break;
 	}
+} //
+Mean::Type Mean::harvest_r2t(model::Resource t) {
+	switch (t) {
+		case model::Resource::STONE:
+			return Mean::Type::HARV_STONE;
+			break;
+		case model::Resource::ORE:
+			return Mean::Type::HARV_ORE;
+			break;
+		case model::Resource::SAND:
+			return Mean::Type::HARV_SAND;
+			break;
+		case model::Resource::ORGANICS:
+			return Mean::Type::HARV_ORGANICS;
+			break;
+	}
+	return Mean::Type::none;
 } //
 Mean::Type Mean::eth2t(model::BuildingType t) {
 	switch (t) {
@@ -493,12 +566,168 @@ Mean::Type Mean::eth2t(int t) {
 	}
 	return Mean::Type::none;
 } //
-vector<Mean::Type> Mean::getParents(Type t) {
-	return vector<Mean::Type>(); //TODO реализовать
+Mean::Type Mean::getParents(Type t) {
+	switch (t) {
+		case Mean::Type::STONE:
+			return Mean::Type::HARV_STONE;
+			break;
+		case Mean::Type::ORE:
+			return Mean::Type::HARV_ORE;
+			break;
+		case Mean::Type::SAND:
+			return Mean::Type::HARV_SAND;
+			break;
+		case Mean::Type::ORGANICS:
+			return Mean::Type::HARV_ORGANICS;
+			break;
+		case Mean::Type::METAL:
+			return Mean::Type::ORE;
+			break;
+		case Mean::Type::SILICON:
+			return Mean::Type::SAND;
+			break;
+		case Mean::Type::PLASTIC:
+			return Mean::Type::ORGANICS;
+			break;
+		case Mean::Type::CHIP:
+			return Mean::Type::SILICON;
+			break;
+		case Mean::Type::ACCUMULATOR:
+			return Mean::Type::PLASTIC;
+			break;
+		case Mean::Type::ROBOT:
+			return Mean::Type::ACCUMULATOR;
+			break;
+		case Mean::Type::HARV_STONE:
+			return Mean::Type::none;
+			break;
+		case Mean::Type::HARV_ORE:
+			return Mean::Type::none;
+			break;
+		case Mean::Type::HARV_SAND:
+			return Mean::Type::none;
+			break;
+		case Mean::Type::HARV_ORGANICS:
+			return Mean::Type::none;
+			break;
+	}
+} //TODO OBLY ONE RES
+Mean::Type Mean::getRightBuild(Type t) {
+	switch (t) {
+		case Mean::Type::STONE:
+			return Mean::Type::QUARRY;
+			break;
+		case Mean::Type::ORE:
+			return Mean::Type::MINES;
+			break;
+		case Mean::Type::SAND:
+			return Mean::Type::CAREER;
+			break;
+		case Mean::Type::ORGANICS:
+			return Mean::Type::FARM;
+			break;
+		case Mean::Type::METAL:
+			return Mean::Type::FOUNDRY;
+			break;
+		case Mean::Type::SILICON:
+			return Mean::Type::FURNACE;
+			break;
+		case Mean::Type::PLASTIC:
+			return Mean::Type::BIOREACTOR;
+			break;
+		case Mean::Type::CHIP:
+			return Mean::Type::CHIP_FACTORY;
+			break;
+		case Mean::Type::ACCUMULATOR:
+			return Mean::Type::ACCUMULATOR_FACTORY;
+			break;
+		case Mean::Type::ROBOT:
+			return Mean::Type::REPLICATOR;
+			break;
+		case Mean::Type::HARV_STONE:
+			return Mean::Type::none;
+			break;
+		case Mean::Type::HARV_ORE:
+			return Mean::Type::none;
+			break;
+		case Mean::Type::HARV_SAND:
+			return Mean::Type::none;
+			break;
+		case Mean::Type::HARV_ORGANICS:
+			return Mean::Type::none;
+			break;
+	}
+} //
+Mean::Type Mean::getRightRes(Type t) {
+	switch (t) {
+		case Mean::Type::FOUNDRY:
+			return Mean::Type::ORE;
+			break;
+		case Mean::Type::FURNACE:
+			return Mean::Type::SAND;
+			break;
+		case Mean::Type::BIOREACTOR:
+			return Mean::Type::ORGANICS;
+			break;
+		case Mean::Type::CHIP_FACTORY:
+			return Mean::Type::SILICON;
+			break;
+		case Mean::Type::ACCUMULATOR_FACTORY:
+			return Mean::Type::PLASTIC;
+			break;
+		case Mean::Type::REPLICATOR:
+			return Mean::Type::ACCUMULATOR;
+			break;
+	}
+	return Mean::Type::none;
 } //
 vector<Mean::Type> Mean::getChildren(Type t) {
-	return vector<Mean::Type>(); //TODO реализовать
-} //
+	/*switch (t) {
+		case Mean::Type::STONE:
+			return {Mean::Type::};
+			break;
+		case Mean::Type::ORE:
+			return {Mean::Type::};
+			break;
+		case Mean::Type::SAND:
+			return {Mean::Type::};
+			break;
+		case Mean::Type::ORGANICS:
+			return {Mean::Type::};
+			break;
+		case Mean::Type::METAL:
+			return {Mean::Type::};
+			break;
+		case Mean::Type::SILICON:
+			return {Mean::Type::};
+			break;
+		case Mean::Type::PLASTIC:
+			return {Mean::Type::};
+			break;
+		case Mean::Type::CHIP:
+			return {Mean::Type::};
+			break;
+		case Mean::Type::ACCUMULATOR:
+			return {Mean::Type::};
+			break;
+		case Mean::Type::ROBOT:
+			return {};
+			break;
+		case Mean::Type::HARV_STONE:
+			return {};
+			break;
+		case Mean::Type::HARV_ORE:
+			return {};
+			break;
+		case Mean::Type::HARV_SAND:
+			return {};
+			break;
+		case Mean::Type::HARV_ORGANICS:
+			return {};
+			break;
+	}*/
+	return {};
+} // todo realise
 int Mean::type_table[NUM_TYPES][NUM_TYPES] = {}; //
 bool Mean::isInitialised = false; //
 void Mean::initialise(const model::Game& game) {
@@ -539,16 +768,16 @@ const vector<Mean::Type> Mean::res_list = {
 		Mean::Type::ROBOT,
 }; //
 const vector<double> Mean::res_price_list = {
-		1,      // STONE
-		2,      // ORE
-		4,      // SAND
-		8,      // ORGANICS
-		20,     // METAL
-		40,     // SILICON
-		80,     // PLASTIC
-		200,    // CHIP
-		400,    // ACCUMULATOR
-		800,    // ROBOT
+		10, //1,      // STONE
+		20, //2,      // ORE
+		30, //4,      // SAND
+		40, //8,      // ORGANICS
+		50, //20,     // METAL
+		60, //40,     // SILICON
+		70, //80,     // PLASTIC
+		80, //200,    // CHIP
+		90, //400,    // ACCUMULATOR
+		100, //800,    // ROBOT
 };
 
 Advert::Advert(PlSub& author, double p) : author(author), x(author.x), y(author.y), type(Mean::Type::none), p(p),
@@ -567,18 +796,18 @@ Demand::Demand(PlSub& author, Mean::Type type, bool isInternal, double p) : Adve
 																			isInternal(isInternal) {
 }; //
 PlSub::PlSub() : x(-1), y(-1), id(-1), mean(Mean::Type::none) {
-	for (double& price: prices_sell) {
+	for (double& price: prices) {
 		price = 0;
 	}
-	for (double& price: prices_buy) {
-		price = 0;
+	for (int i = 0; i < Mean::res_list.size(); ++i) {
+		prices[(int) Mean::res_list[i]] = Mean::res_price_list[i];
 	}
 } //
 PlSub::PlSub(int x, int y, int id, Mean::Type mean) : x(x), y(y), id(id), mean(mean) {
-	for (double& price: prices_sell) {
+	for (double& price: prices) {
 		price = 0;
 	}
-	for (double& price: prices_buy) {
-		price = 0;
+	for (int i = 0; i < Mean::res_list.size(); ++i) {
+		prices[(int) Mean::res_list[i]] = Mean::res_price_list[i];
 	}
 } //
