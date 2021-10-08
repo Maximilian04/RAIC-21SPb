@@ -19,6 +19,8 @@ namespace model {
 class Planet {
 public:
     // TODO - Document
+    int id;
+    // TODO - Document
     int x;
     // TODO - Document
     int y;
@@ -31,7 +33,7 @@ public:
     // TODO - Document
     std::optional<model::Building> building;
 
-    Planet(int x, int y, std::optional<model::Resource> harvestableResource, std::vector<model::WorkerGroup> workerGroups, std::unordered_map<model::Resource, int> resources, std::optional<model::Building> building);
+    Planet(int id, int x, int y, std::optional<model::Resource> harvestableResource, std::vector<model::WorkerGroup> workerGroups, std::unordered_map<model::Resource, int> resources, std::optional<model::Building> building);
 
     // Read Planet from input stream
     static Planet readFrom(InputStream& stream);

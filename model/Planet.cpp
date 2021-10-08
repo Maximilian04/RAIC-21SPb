@@ -2,10 +2,11 @@
 
 namespace model {
 
-Planet::Planet(int x, int y, std::optional<model::Resource> harvestableResource, std::vector<model::WorkerGroup> workerGroups, std::unordered_map<model::Resource, int> resources, std::optional<model::Building> building) : x(x), y(y), harvestableResource(harvestableResource), workerGroups(workerGroups), resources(resources), building(building) { }
+Planet::Planet(int id, int x, int y, std::optional<model::Resource> harvestableResource, std::vector<model::WorkerGroup> workerGroups, std::unordered_map<model::Resource, int> resources, std::optional<model::Building> building) : id(id), x(x), y(y), harvestableResource(harvestableResource), workerGroups(workerGroups), resources(resources), building(building) { }
 
 // Read Planet from input stream
 Planet Planet::readFrom(InputStream& stream) {
+    int id = stream.readInt();
     int x = stream.readInt();
     int y = stream.readInt();
     std::optional<model::Resource> harvestableResource = std::optional<model::Resource>();
@@ -33,11 +34,12 @@ Planet Planet::readFrom(InputStream& stream) {
         model::Building buildingValue = model::Building::readFrom(stream);
         building.emplace(buildingValue);
     }
-    return Planet(x, y, harvestableResource, workerGroups, resources, building);
+    return Planet(id, x, y, harvestableResource, workerGroups, resources, building);
 }
 
 // Write Planet to output stream
 void Planet::writeTo(OutputStream& stream) const {
+    stream.write(id);
     stream.write(x);
     stream.write(y);
     if (harvestableResource) {
@@ -71,6 +73,9 @@ void Planet::writeTo(OutputStream& stream) const {
 std::string Planet::toString() const {
     std::stringstream ss;
     ss << "Planet { ";
+    ss << "id: ";
+    ss << id;
+    ss << ", ";
     ss << "x: ";
     ss << x;
     ss << ", ";
