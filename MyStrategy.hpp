@@ -4,8 +4,8 @@
 #include "model/Game.hpp"
 #include "model/Action.hpp"
 
+#include <Cycle.h>
 #include "Planet.h"
-#include "Task.h"
 #include <vector>
 
 using namespace std;
@@ -17,10 +17,11 @@ public:
 
 	int homePlanet;
 	vector<Planet> planetInf;
+	vector<vector<int>> planetDists;
 	void init(const model::Game& game);
 	void separatePlanets(const model::Game& game); // generating list of planets
 
-	vector<Task> tasks;
+	Cycle prodCycle;
 };
 
 #endif

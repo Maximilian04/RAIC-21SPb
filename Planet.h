@@ -8,9 +8,11 @@
 
 class Planet {
 public:
+	int id;
 	int planetOwner; // 1 - we are, 0 - we aren't
-	int bookedResource;
-	int bookedPlace;
+
+	int building;
+	int robotNumber; // >0 - our robots, <0 - enemy robot
 };
 
 

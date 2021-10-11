@@ -20,9 +20,10 @@ enum {
 	PLASTIC,
 	CHIP,
 	ACCUMULATOR,
+};
 
-	MINES,
-	QUARRY,
+enum {
+	QUARRY = 0,
 	CAREER,
 	FARM,
 	FOUNDRY,
@@ -30,7 +31,9 @@ enum {
 	BIOREACTOR,
 	CHIP_FACTORY,
 	ACCUMULATOR_FACTORY,
-	REPLICATOR,
+	REPLICATOR, // всего 9 позиций
+
+	MINES,
 };
 
 model::Resource t2r(int t);

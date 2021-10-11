@@ -29,8 +29,8 @@ set(HEADERS
         "model/Resource.hpp"
         "model/WorkerGroup.hpp"
         Terms.h
-        Task.h
-        Planet.h)
+        Planet.h
+        Cycle.h)
 set(SRC
         "MyStrategy.cpp"
         "Stream.cpp"
@@ -52,9 +52,9 @@ set(SRC
         "model/Player.cpp"
         "model/Resource.cpp"
         "model/WorkerGroup.cpp"
-        Task.cpp
         Terms.cpp
-        Planet.cpp)
+        Planet.cpp
+        Cycle.cpp)
 SET_SOURCE_FILES_PROPERTIES(${HEADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
 include_directories(".")
 add_executable(spb_ai_champ ${HEADERS} ${SRC})
