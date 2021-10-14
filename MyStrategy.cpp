@@ -141,17 +141,29 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		cout << prodCycle.buildingPlanet[CHIP_FACTORY] << endl;
 		cout << prodCycle.buildingPlanet[ACCUMULATOR_FACTORY] << endl;
 		cout << prodCycle.buildingPlanet[REPLICATOR] << endl;*/
-	} else {
+
+		prodCycle.isPlanned = true;
+	} else if (!prodCycle.isBuilt) {
 		int freeStone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
 							game.planets[homePlanet].resources.at(t2r(STONE)) : 0,
 							!game.planets[homePlanet].workerGroups.empty() ?
 							game.planets[homePlanet].workerGroups[0].number : 0);
 		for (int building = 0; building < CYCLE_BUILD_NUM; ++building) {
-			if (prodCycle.buildingPlanet[building] != -1) continue;
-			if (freeStone < stoneCost(building)) continue;
+			if (game.planets[prodCycle.buildingPlanet[building]].building.has_value()) continue;
+			if (prodCycle.orderedPlanet[building]) {
+				buildActions.push_back(model::BuildingAction(prodCycle.buildingPlanet[building],
+															 optional<model::BuildingType>(t2b(building))));
+			} else {
+				if (freeStone < stoneCost(building)) continue;
 
-
+				moveActions.push_back(model::MoveAction(homePlanet, prodCycle.buildingPlanet[building],
+														stoneCost(building), optional<model::Resource>(t2r(STONE))));
+				freeStone -= stoneCost(building);
+				prodCycle.orderedPlanet[building] = true;
+			}
 		}
+	} else {
+
 	}
 
 	return model::Action(moveActions, buildActions);
