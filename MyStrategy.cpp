@@ -62,8 +62,8 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		int minD = -1;
 		int minI;
 		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
-			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[QUARRY]]) > minD) {
-				minD = planetDists[*planet][prodCycle.buildingPlanet[QUARRY]];
+			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[MINES]]) > minD) {
+				minD = planetDists[*planet][prodCycle.buildingPlanet[MINES]];
 				minI = *planet;
 			}
 		}
@@ -118,11 +118,11 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 				minI = *planet;
 			}
 		}
-		prodCycle.buildingPlanet[BIOREACTOR] = minI;
+		prodCycle.buildingPlanet[REPLICATOR] = minI;
 		prodCycle.usedPlanets.erase(minI);
 
 
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[QUARRY]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[MINES]);
 		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[CAREER]);
 		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[FARM]);
 		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[FOUNDRY]);
@@ -132,7 +132,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[ACCUMULATOR_FACTORY]);
 		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[REPLICATOR]);
 
-		/*cout << prodCycle.buildingPlanet[QUARRY] << endl;
+		cout << prodCycle.buildingPlanet[MINES] << endl;
 		cout << prodCycle.buildingPlanet[CAREER] << endl;
 		cout << prodCycle.buildingPlanet[FARM] << endl;
 		cout << prodCycle.buildingPlanet[FOUNDRY] << endl;
@@ -140,7 +140,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		cout << prodCycle.buildingPlanet[BIOREACTOR] << endl;
 		cout << prodCycle.buildingPlanet[CHIP_FACTORY] << endl;
 		cout << prodCycle.buildingPlanet[ACCUMULATOR_FACTORY] << endl;
-		cout << prodCycle.buildingPlanet[REPLICATOR] << endl;*/
+		cout << prodCycle.buildingPlanet[REPLICATOR] << endl;
 
 		prodCycle.isPlanned = true;
 	} else if (!prodCycle.isBuilt) {

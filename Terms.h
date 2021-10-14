@@ -24,7 +24,7 @@ enum {
 };
 
 enum {
-	QUARRY = 0,
+	MINES = 0,
 	CAREER,
 	FARM,
 	FOUNDRY,
@@ -34,7 +34,7 @@ enum {
 	ACCUMULATOR_FACTORY,
 	REPLICATOR, // всего 9 позиций
 
-	MINES,
+	QUARRY,
 };
 
 model::Resource t2r(int t);

@@ -14,8 +14,8 @@ using namespace std;
 
 class Cycle {
 public:
-	vector<int> buildingPlanet; // QUARRY -> REPLICATOR
-	vector<bool> orderedPlanet; // QUARRY -> REPLICATOR
+	vector<int> buildingPlanet; // MINES -> REPLICATOR
+	vector<bool> orderedPlanet; // MINES -> REPLICATOR
 	set<int> usedPlanets;
 	bool isBuilt;
 	bool isPlanned;

@@ -76,8 +76,8 @@ int r2t(model::Resource r) {
 
 model::BuildingType t2b(int t) {
 	switch (t) {
-		case QUARRY:
-			return model::BuildingType::QUARRY;
+		case MINES:
+			return model::BuildingType::MINES;
 			break;
 		case CAREER:
 			return model::BuildingType::CAREER;
@@ -103,8 +103,8 @@ model::BuildingType t2b(int t) {
 		case REPLICATOR:
 			return model::BuildingType::REPLICATOR;
 			break;
-		case MINES:
-			return model::BuildingType::MINES;
+		case QUARRY:
+			return model::BuildingType::QUARRY;
 			break;
 		default:
 			cout << "I've returned BuildingType::MINES, but I'm objecting" << endl;
@@ -114,8 +114,8 @@ model::BuildingType t2b(int t) {
 
 int b2t(model::BuildingType b) {
 	switch (b) {
-		case model::BuildingType::QUARRY:
-			return QUARRY;
+		case model::BuildingType::MINES:
+			return MINES;
 			break;
 		case model::BuildingType::CAREER:
 			return CAREER;
@@ -141,8 +141,8 @@ int b2t(model::BuildingType b) {
 		case model::BuildingType::REPLICATOR:
 			return REPLICATOR;
 			break;
-		case model::BuildingType::MINES:
-			return MINES;
+		case model::BuildingType::QUARRY:
+			return QUARRY;
 			break;
 		default:
 			cout << "I've returned MINES, but I'm objecting" << endl;
@@ -152,7 +152,7 @@ int b2t(model::BuildingType b) {
 
 int stoneCost(int t) {
 	switch (t) {
-		case QUARRY:
+		case MINES:
 			return 50;
 			break;
 		case CAREER:
@@ -177,9 +177,9 @@ int stoneCost(int t) {
 			return 100;
 			break;
 		case REPLICATOR:
-			return 100;
+			return 200;
 			break;
-		case MINES:
+		case QUARRY:
 			return 50;
 			break;
 		default:
