@@ -11,8 +11,7 @@
 using namespace std;
 
 enum {
-	STONE = 0,
-	ORE,
+	ORE = 0,
 	SAND,
 	ORGANICS,
 	METAL,
@@ -20,6 +19,8 @@ enum {
 	PLASTIC,
 	CHIP,
 	ACCUMULATOR,
+
+	STONE,
 };
 
 enum {
@@ -37,5 +38,9 @@ enum {
 };
 
 model::Resource t2r(int t);
+int r2t(model::Resource r);
+model::BuildingType t2b(int t);
+int b2t(model::BuildingType b);
+int stoneCost(int t);
 
 #endif //MYSTRATEGY_CPP_TERMS_H

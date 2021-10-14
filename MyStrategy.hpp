@@ -4,8 +4,9 @@
 #include "model/Game.hpp"
 #include "model/Action.hpp"
 
-#include <Cycle.h>
+#include "Cycle.h"
 #include "Planet.h"
+#include "Terms.h"
 #include <vector>
 
 using namespace std;

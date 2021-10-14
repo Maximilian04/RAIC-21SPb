@@ -10,82 +10,148 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	vector<model::MoveAction> moveActions;
 	vector<model::BuildingAction> buildActions;
 
-	for (int id = 0; id < game.planets.size(); ++id) { // checking robots tasks
-		if (planetOwner[id] != 1) continue;
-		if (game.planets[id].workerGroups.empty()) continue;
+	if (!prodCycle.isPlanned) {
+		for (int id = 0; id < game.planets.size(); ++id) { // перебираем планеты с ресурсами
+			if (game.planets[id].harvestableResource.has_value() &&
+				game.planets[id].harvestableResource.value() != t2r(STONE)) {
+				int resource = r2t(game.planets[id].harvestableResource.value());
 
-		int freeRobots = game.planets[id].workerGroups[0].number;
-		for (Task task: tasks) {
-			if (task.currentPlanet != id) continue;
-			if (freeRobots < task.number) continue;
-			freeRobots -= task.number;
+				if (prodCycle.buildingPlanet[resource] == -1 ||
+					planetDists[prodCycle.buildingPlanet[resource]][homePlanet] >
+					planetDists[id][homePlanet]) {
 
-			if (task.finishPlanet != task.startPlanet) {
-				//TODO realise resource checking
-				moveActions.push_back(task.getMoveAction());
-			}
-		}
-		if (freeRobots == 0) continue;
-
-		for (int targetId = 0; targetId < game.planets.size() && freeRobots > 0; ++targetId) {
-			if (game.planets[targetId].building.has_value() &&
-				bookedPlace[targetId] != 0
-					) { //TODO change to true place calculating
-
-				bookedPlace[targetId] = min(100, freeRobots);
-				Task task = Task{min(100, freeRobots), targetId, targetId, -1, targetId};
-				moveActions.push_back(task.getMoveAction());
-				tasks.push_back(task);
-				freeRobots -= min(100, freeRobots);
-			}
-		}
-		if (freeRobots == 0) continue;
-
-		for (int targetId = 0; targetId < game.planets.size() && freeRobots > 0; ++targetId) {
-			if (!game.planets[targetId].building.has_value() &&
-				game.planets[targetId].harvestableResource.has_value() &&
-				bookedPlace[targetId] != 0
-					) { //TODO change to true place calculating
-
-				//TODO change to 2:1
-				int nearestDist = -1, nearestId = -1;
-				for (int i = 0; i < game.planets.size(); ++i) {
-					if (i == targetId) continue;
-					int dist = abs(game.planets[i].x - game.planets[targetId].x) +
-							   abs(game.planets[i].y - game.planets[targetId].y);
-
-					if (nearestDist == -1 || dist < nearestDist) {
-						nearestDist = dist;
-						nearestId = i;
-					}
+					prodCycle.buildingPlanet[resource] = id;
 				}
-				if (nearestId == id) {
+			}
+		}
+		/*prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[ORE]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[SAND]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[ORGANICS]);*/
 
+		// перебираем планеты для зданий
+		for (int id = 0; id < game.planets.size(); ++id) {
+			if (id != homePlanet &&
+				id != prodCycle.buildingPlanet[ORE] &&
+				id != prodCycle.buildingPlanet[SAND] &&
+				id != prodCycle.buildingPlanet[ORGANICS]) {
+				if (prodCycle.usedPlanets.size() < (CYCLE_BUILD_NUM - 3)) {
+					prodCycle.usedPlanets.emplace(id);
 				} else {
-					if (!game.planets[nearestId].building.has_value()) {
-						if (!game.planets[id].resources.count(t2r(STONE)) ||
-							game.planets[id].resources.at(t2r(STONE)) < 100)
-							continue;
-						if (freeRobots < 100) continue;
-						bookedPlace[targetId] = 100;
-						Task task = Task{100, id, nearestId, STONE, targetId};
-						moveActions.push_back(task.getMoveAction());
-						tasks.push_back(task);
-						freeRobots -= 100;
+					int minD = -1;
+					int minI;
+					for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
+						if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[ORE]] +
+										   planetDists[*planet][prodCycle.buildingPlanet[SAND]] +
+										   planetDists[*planet][prodCycle.buildingPlanet[ORGANICS]]) > minD) {
+							minD = planetDists[*planet][prodCycle.buildingPlanet[ORE]] +
+								   planetDists[*planet][prodCycle.buildingPlanet[SAND]] +
+								   planetDists[*planet][prodCycle.buildingPlanet[ORGANICS]];
+							minI = *planet;
+						}
+					}
+					if ((planetDists[id][prodCycle.buildingPlanet[ORE]] +
+						 planetDists[id][prodCycle.buildingPlanet[SAND]] +
+						 planetDists[id][prodCycle.buildingPlanet[ORGANICS]]) < minD) {
+						prodCycle.usedPlanets.erase(minI);
+						prodCycle.usedPlanets.emplace(id);
 					}
 				}
-
-				if (!game.planets[id].resources.count(t2r(STONE)) || game.planets[id].resources.at(t2r(STONE)) < 50)
-					continue;
-				if (freeRobots < 100) continue;
-				bookedPlace[targetId] = 100;
-				Task task = Task{100, id, nearestId, STONE, targetId};
-				moveActions.push_back(task.getMoveAction());
-				tasks.push_back(task);
-				freeRobots -= 100;
 			}
 		}
-		if (freeRobots == 0) continue;
+
+		int minD = -1;
+		int minI;
+		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
+			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[QUARRY]]) > minD) {
+				minD = planetDists[*planet][prodCycle.buildingPlanet[QUARRY]];
+				minI = *planet;
+			}
+		}
+		prodCycle.buildingPlanet[FOUNDRY] = minI;
+		prodCycle.usedPlanets.erase(minI);
+
+		minD = -1;
+		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
+			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[CAREER]]) > minD) {
+				minD = planetDists[*planet][prodCycle.buildingPlanet[CAREER]];
+				minI = *planet;
+			}
+		}
+		prodCycle.buildingPlanet[FURNACE] = minI;
+		prodCycle.usedPlanets.erase(minI);
+
+		minD = -1;
+		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
+			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[FARM]]) > minD) {
+				minD = planetDists[*planet][prodCycle.buildingPlanet[FARM]];
+				minI = *planet;
+			}
+		}
+		prodCycle.buildingPlanet[BIOREACTOR] = minI;
+		prodCycle.usedPlanets.erase(minI);
+
+
+		minD = -1;
+		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
+			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]]) > minD) {
+				minD = planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]];
+				minI = *planet;
+			}
+		}
+		prodCycle.buildingPlanet[CHIP_FACTORY] = minI;
+		prodCycle.usedPlanets.erase(minI);
+
+		minD = -1;
+		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
+			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]]) > minD) {
+				minD = planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]];
+				minI = *planet;
+			}
+		}
+		prodCycle.buildingPlanet[ACCUMULATOR] = minI;
+		prodCycle.usedPlanets.erase(minI);
+
+		minD = -1;
+		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
+			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]]) > minD) {
+				minD = planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]];
+				minI = *planet;
+			}
+		}
+		prodCycle.buildingPlanet[BIOREACTOR] = minI;
+		prodCycle.usedPlanets.erase(minI);
+
+
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[QUARRY]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[CAREER]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[FARM]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[FOUNDRY]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[FURNACE]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[BIOREACTOR]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[CHIP_FACTORY]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[ACCUMULATOR_FACTORY]);
+		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[REPLICATOR]);
+
+		/*cout << prodCycle.buildingPlanet[QUARRY] << endl;
+		cout << prodCycle.buildingPlanet[CAREER] << endl;
+		cout << prodCycle.buildingPlanet[FARM] << endl;
+		cout << prodCycle.buildingPlanet[FOUNDRY] << endl;
+		cout << prodCycle.buildingPlanet[FURNACE] << endl;
+		cout << prodCycle.buildingPlanet[BIOREACTOR] << endl;
+		cout << prodCycle.buildingPlanet[CHIP_FACTORY] << endl;
+		cout << prodCycle.buildingPlanet[ACCUMULATOR_FACTORY] << endl;
+		cout << prodCycle.buildingPlanet[REPLICATOR] << endl;*/
+	} else {
+		int freeStone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
+							game.planets[homePlanet].resources.at(t2r(STONE)) : 0,
+							!game.planets[homePlanet].workerGroups.empty() ?
+							game.planets[homePlanet].workerGroups[0].number : 0);
+		for (int building = 0; building < CYCLE_BUILD_NUM; ++building) {
+			if (prodCycle.buildingPlanet[building] != -1) continue;
+			if (freeStone < stoneCost(building)) continue;
+
+
+		}
 	}
 
 	return model::Action(moveActions, buildActions);
@@ -99,21 +165,55 @@ void MyStrategy::init(const model::Game& game) {
 			break;
 		}
 	}
+
+	planetDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), 0));
+	int count = game.planets.size();
+	while (count--) {
+		for (int i = 0; i < game.planets.size(); ++i) {
+			for (int j = 0; j < game.planets.size(); ++j) {
+				if (i == j) continue;
+				if ((abs(game.planets[i].x - game.planets[j].x) +
+					 abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance)) {
+					planetDists[i][j] = planetDists[j][i] = abs(game.planets[i].x - game.planets[j].x) +
+															abs(game.planets[i].y - game.planets[j].y);
+
+					for (int m = 0; m < game.planets.size(); ++m) {
+						if (m == i || m == j) continue;
+						if (planetDists[m][i] != 0 &&
+							(planetDists[m][j] == 0 || planetDists[m][j] > (planetDists[m][i] + planetDists[i][j]))) {
+							planetDists[m][j] = planetDists[j][m] = planetDists[m][i] + planetDists[i][j];
+						}
+						if (planetDists[m][j] != 0 &&
+							(planetDists[m][i] == 0 || planetDists[m][i] > (planetDists[m][j] + planetDists[i][j]))) {
+							planetDists[m][i] = planetDists[i][m] = planetDists[m][j] + planetDists[i][j];
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/*for (int i = 0; i < game.planets.size(); ++i) {
+		for (int j = 0; j < game.planets.size(); ++j) {
+			cout << planetDists[i][j] << " ";
+		}
+		cout << endl;
+	}*/
+
+	prodCycle.buildingPlanet = vector<int>(9, -1);
 }
 
 void MyStrategy::separatePlanets(const model::Game& game) { // generating list of planets
 	//TODO change to true zone separating
-	if (planetOwner.empty()) {
-		planetOwner = vector<int>(game.planets.size(), 0);
-		bookedResource = vector<int>(game.planets.size(), 0);
-		bookedPlace = vector<int>(game.planets.size(), 0);
+	if (planetInf.empty()) {
+		planetInf = vector<Planet>(game.planets.size());
 	}
 
 	for (int id = 0; id < game.planets.size(); ++id) {
 		if (game.planets[id].workerGroups.empty() || game.planets[id].workerGroups[0].playerIndex == game.myIndex) {
-			planetOwner[id] = 1;
+			planetInf[id].planetOwner = 1;
 		} else {
-			planetOwner[id] = 0;
+			planetInf[id].planetOwner = 0;
 		}
 	}
 }

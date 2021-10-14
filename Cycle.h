@@ -5,13 +5,21 @@
 #ifndef MYSTRATEGY_CPP_CYCLE_H
 #define MYSTRATEGY_CPP_CYCLE_H
 
+#define CYCLE_BUILD_NUM 9
+
 #include <vector>
+#include <set>
 
 using namespace std;
 
 class Cycle {
 public:
 	vector<int> buildingPlanet; // QUARRY -> REPLICATOR
+	set<int> usedPlanets;
+	bool isBuilt;
+	bool isPlanned;
+
+	Cycle();
 };
 
 
