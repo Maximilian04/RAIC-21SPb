@@ -16,6 +16,7 @@ class Cycle {
 public:
 	vector<int> buildingPlanet; // MINES -> REPLICATOR
 	vector<bool> orderedPlanet; // MINES -> REPLICATOR
+	vector<bool> stackedPlanet; // MINES -> REPLICATOR
 	set<int> usedPlanets;
 	bool isBuilt;
 	bool isPlanned;

@@ -22,6 +22,7 @@ public:
 	void init(const model::Game& game);
 	void separatePlanets(const model::Game& game); // generating list of planets
 
+	int resetTimer;
 	Cycle prodCycle;
 };
 
