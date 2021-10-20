@@ -170,7 +170,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			cout << "работаем" << endl;
 		}
 	} else {
-		if (resetTimer > 10) {
+		if (resetTimer > 100) {
 			for (int building = 3; building < prodCycle.stackedPlanet.size(); ++building) {
 				if (prodCycle.stackedPlanet[building]) {
 					if (game.planets[prodCycle.buildingPlanet[building]].workerGroups.empty() ||
@@ -202,9 +202,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 				game.planets[id].workerGroups[0].playerIndex == game.myIndex) {
 
 				if (id == prodCycle.buildingPlanet[MINES]) {
-					int freeRobots = min(max(0, game.planets[id].workerGroups[0].number - 20),
-										 game.planets[id].resources.count(t2r(ORE)) ?
-										 game.planets[id].resources.at(t2r(ORE)) : 0);
+					int freeRobots = max(0, game.planets[id].workerGroups[0].number - 20);
 					if (freeRobots < 12) continue;
 					prodCycle.stackedPlanet[MINES] = false;
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[FOUNDRY],
@@ -213,9 +211,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 
 				} else if (id == prodCycle.buildingPlanet[CAREER]) {
-					int freeRobots = min(max(0, game.planets[id].workerGroups[0].number - 20),
-										 game.planets[id].resources.count(t2r(SAND)) ?
-										 game.planets[id].resources.at(t2r(SAND)) : 0);
+					int freeRobots = max(0, game.planets[id].workerGroups[0].number - 20);
 					if (freeRobots < 12) continue;
 					prodCycle.stackedPlanet[CAREER] = false;
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[FURNACE],
@@ -224,9 +220,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 
 				} else if (id == prodCycle.buildingPlanet[FARM]) {
-					int freeRobots = min(max(0, game.planets[id].workerGroups[0].number - 20),
-										 game.planets[id].resources.count(t2r(ORGANICS)) ?
-										 game.planets[id].resources.at(t2r(ORGANICS)) : 0);
+					int freeRobots = max(0, game.planets[id].workerGroups[0].number - 20);
 					if (freeRobots < 12) continue;
 					prodCycle.stackedPlanet[FARM] = false;
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[BIOREACTOR],
@@ -235,90 +229,102 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 
 				} else if (id == prodCycle.buildingPlanet[FOUNDRY]) {
-					int freeRobots = min(max(0, game.planets[id].workerGroups[0].number - 10),
-										 game.planets[id].resources.count(t2r(METAL)) ?
-										 game.planets[id].resources.at(t2r(METAL)) : 0);
-					if (freeRobots < 12) continue;
+					int freeRobots = max(0, game.planets[id].workerGroups[0].number - 10);
+					if (freeRobots < 16) continue;
 					prodCycle.stackedPlanet[FOUNDRY] = false;
-					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[CHIP_FACTORY],
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[MINES],
 															freeRobots / 2,
-															optional<model::Resource>(t2r(METAL))));
-					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[REPLICATOR],
-															freeRobots / 3,
+															optional<model::Resource>()));
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[CHIP_FACTORY],
+															freeRobots / 4,
 															optional<model::Resource>(t2r(METAL))));
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[ACCUMULATOR_FACTORY],
-															freeRobots - (freeRobots / 2) - (freeRobots / 3),
+															freeRobots / 8,
+															optional<model::Resource>(t2r(METAL))));
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[REPLICATOR],
+															freeRobots -
+															(freeRobots / 2 + freeRobots / 4 + freeRobots / 8),
 															optional<model::Resource>(t2r(METAL))));
 
 
 				} else if (id == prodCycle.buildingPlanet[FURNACE]) {
-					int freeRobots = min(max(0, game.planets[id].workerGroups[0].number - 10),
-										 game.planets[id].resources.count(t2r(SILICON)) ?
-										 game.planets[id].resources.at(t2r(SILICON)) : 0);
+					int freeRobots = max(0, game.planets[id].workerGroups[0].number - 10);
 					if (freeRobots < 12) continue;
 					prodCycle.stackedPlanet[FURNACE] = false;
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[CAREER],
+															freeRobots / 2,
+															optional<model::Resource>()));
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[CHIP_FACTORY],
-															freeRobots,
+															freeRobots - freeRobots / 2,
 															optional<model::Resource>(t2r(SILICON))));
 
 
 				} else if (id == prodCycle.buildingPlanet[BIOREACTOR]) {
-					int freeRobots = min(max(0, game.planets[id].workerGroups[0].number - 10),
-										 game.planets[id].resources.count(t2r(PLASTIC)) ?
-										 game.planets[id].resources.at(t2r(PLASTIC)) : 0);
+					int freeRobots = max(0, game.planets[id].workerGroups[0].number - 10);
 					if (freeRobots < 12) continue;
 					prodCycle.stackedPlanet[BIOREACTOR] = false;
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[FARM],
+															freeRobots / 2,
+															optional<model::Resource>()));
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[ACCUMULATOR_FACTORY],
-															freeRobots,
+															freeRobots - freeRobots / 2,
 															optional<model::Resource>(t2r(PLASTIC))));
 
 
 				} else if (id == prodCycle.buildingPlanet[CHIP_FACTORY]) {
-					int freeRobots = min(max(0, game.planets[id].workerGroups[0].number - 10),
-										 game.planets[id].resources.count(t2r(CHIP)) ?
-										 game.planets[id].resources.at(t2r(CHIP)) : 0);
+					int freeRobots = max(0, game.planets[id].workerGroups[0].number - 10);
 					if (freeRobots < 12) continue;
 					prodCycle.stackedPlanet[CHIP_FACTORY] = false;
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[MINES],
+															freeRobots / 3,
+															optional<model::Resource>()));
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[CAREER],
+															freeRobots / 3,
+															optional<model::Resource>()));
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[REPLICATOR],
-															freeRobots,
+															freeRobots - 2 * freeRobots / 3,
 															optional<model::Resource>(t2r(CHIP))));
 
 
 				} else if (id == prodCycle.buildingPlanet[ACCUMULATOR_FACTORY]) {
-					int freeRobots = min(max(0, game.planets[id].workerGroups[0].number - 10),
-										 game.planets[id].resources.count(t2r(ACCUMULATOR)) ?
-										 game.planets[id].resources.at(t2r(ACCUMULATOR)) : 0);
+					int freeRobots = max(0, game.planets[id].workerGroups[0].number - 10);
 					if (freeRobots < 12) continue;
 					prodCycle.stackedPlanet[ACCUMULATOR_FACTORY] = false;
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[MINES],
+															freeRobots / 3,
+															optional<model::Resource>()));
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[CAREER],
+															freeRobots / 3,
+															optional<model::Resource>()));
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[REPLICATOR],
-															freeRobots,
+															freeRobots - 2 * freeRobots / 3,
 															optional<model::Resource>(t2r(ACCUMULATOR))));
 
 
 				} else if (id == prodCycle.buildingPlanet[REPLICATOR]) {
 					int freeRobots = max(0, game.planets[id].workerGroups[0].number - 10);
-					if (freeRobots < 12) continue;
+					if (freeRobots < 14) continue;
 					prodCycle.stackedPlanet[REPLICATOR] = false;
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[CAREER],
-															freeRobots / 3,
+															freeRobots / 7,
 															optional<model::Resource>()));
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[FARM],
-															freeRobots / 3,
+															2 * freeRobots / 7,
 															optional<model::Resource>()));
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[MINES],
 															freeRobots -
-															2 * freeRobots / 3,
+															3 * freeRobots / 7,
 															optional<model::Resource>()));
 				} else {
-					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[CAREER],
-															game.planets[id].workerGroups[0].number / 3,
-															optional<model::Resource>()));
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[FARM],
-															game.planets[id].workerGroups[0].number / 3,
+															game.planets[id].workerGroups[0].number / 7,
+															optional<model::Resource>()));
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[CAREER],
+															2 * game.planets[id].workerGroups[0].number / 7,
 															optional<model::Resource>()));
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[MINES],
 															game.planets[id].workerGroups[0].number -
-															2 * game.planets[id].workerGroups[0].number / 3,
+															3 * (game.planets[id].workerGroups[0].number / 7),
 															optional<model::Resource>()));
 				}
 			}
