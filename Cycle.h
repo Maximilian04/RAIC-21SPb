@@ -21,6 +21,8 @@ public:
 	bool isBuilt;
 	bool isPlanned;
 
+	int prodFactor;
+
 	Cycle();
 };
 
