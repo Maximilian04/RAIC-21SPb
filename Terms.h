@@ -36,6 +36,7 @@ enum {
 
 	QUARRY,
 };
+#define EXTRAFOUNDRY 9
 
 model::Resource t2r(int t);
 int r2t(model::Resource r);
