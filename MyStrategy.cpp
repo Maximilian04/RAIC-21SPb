@@ -383,7 +383,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		}
 	}
 
-	return model::Action(moveActions, buildActions);
+	return model::Action(moveActions, buildActions, optional<model::Specialty>());
 }
 
 void MyStrategy::init(const model::Game& game) {

@@ -9,6 +9,7 @@
 #include "model/Planet.hpp"
 #include "model/Player.hpp"
 #include "model/Resource.hpp"
+#include "model/Specialty.hpp"
 #include "model/WorkerGroup.hpp"
 #include <optional>
 #include <sstream>
@@ -19,31 +20,41 @@
 
 namespace model {
 
-// TODO - Document
+// Current game's state
 class Game {
 public:
-    // TODO - Document
+    // Your player's index
     int myIndex;
-    // TODO - Document
+    // Current tick number
     int currentTick;
-    // TODO - Document
+    // Max number of ticks in the game
     int maxTickCount;
-    // TODO - Document
+    // List of players
     std::vector<model::Player> players;
-    // TODO - Document
+    // List of planets
     std::vector<model::Planet> planets;
-    // TODO - Document
+    // List of flying worker groups
     std::vector<model::FlyingWorkerGroup> flyingWorkerGroups;
-    // TODO - Document
+    // Max number of flying worker groups for one player
     int maxFlyingWorkerGroups;
-    // TODO - Document
+    // Max distance of direct travel between planets
     int maxTravelDistance;
-    // TODO - Document
+    // Additional distance of direct travel between planets for player with Logistics specialty
+    int logisticsUpgrade;
+    // Additional work done by player with Production specialty (in percent)
+    int productionUpgrade;
+    // Additional strength workers for player with Combat specialty (in percent)
+    int combatUpgrade;
+    // Max number of workers performing building on one planet
     int maxBuilders;
-    // TODO - Document
+    // Properties of every building type
     std::unordered_map<model::BuildingType, model::BuildingProperties> buildingProperties;
+    // Whether choosing specialties is allowed
+    bool specialtiesAllowed;
+    // View distance
+    std::optional<int> viewDistance;
 
-    Game(int myIndex, int currentTick, int maxTickCount, std::vector<model::Player> players, std::vector<model::Planet> planets, std::vector<model::FlyingWorkerGroup> flyingWorkerGroups, int maxFlyingWorkerGroups, int maxTravelDistance, int maxBuilders, std::unordered_map<model::BuildingType, model::BuildingProperties> buildingProperties);
+    Game(int myIndex, int currentTick, int maxTickCount, std::vector<model::Player> players, std::vector<model::Planet> planets, std::vector<model::FlyingWorkerGroup> flyingWorkerGroups, int maxFlyingWorkerGroups, int maxTravelDistance, int logisticsUpgrade, int productionUpgrade, int combatUpgrade, int maxBuilders, std::unordered_map<model::BuildingType, model::BuildingProperties> buildingProperties, bool specialtiesAllowed, std::optional<int> viewDistance);
 
     // Read Game from input stream
     static Game readFrom(InputStream& stream);

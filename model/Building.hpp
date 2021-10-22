@@ -9,17 +9,19 @@
 
 namespace model {
 
-// TODO - Document
+// A building
 class Building {
 public:
-    // TODO - Document
+    // Building's type
     model::BuildingType buildingType;
-    // TODO - Document
+    // Current health
     int health;
-    // TODO - Document
+    // Amount of work done for current task
     int workDone;
+    // Number of tasks finished since last tick
+    int lastTickTasksDone;
 
-    Building(model::BuildingType buildingType, int health, int workDone);
+    Building(model::BuildingType buildingType, int health, int workDone, int lastTickTasksDone);
 
     // Read Building from input stream
     static Building readFrom(InputStream& stream);
