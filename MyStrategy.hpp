@@ -8,6 +8,8 @@
 #include "Planet.h"
 #include "Terms.h"
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 

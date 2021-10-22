@@ -383,6 +383,36 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		}
 	}
 
+	if (game.currentTick == 999) {
+		int robC = 0;
+		fstream file("stat.txt", ios::in);
+		file >> robC;
+		file.close();
+		for (int id = 0; id < game.planets.size(); ++id) {
+			if (!game.planets[id].workerGroups.empty() &&
+				game.planets[id].workerGroups[0].playerIndex == game.myIndex) {
+				robC += game.planets[id].workerGroups[0].number;
+			}
+		}
+		for (int i = 0; i < game.flyingWorkerGroups.size(); ++i) {
+			if (game.flyingWorkerGroups[i].playerIndex == game.myIndex) {
+				robC += game.flyingWorkerGroups[i].number;
+			}
+		}
+		file.open("stat.txt", ios::out);
+		file << robC;
+		file.close();
+		int c;
+		file.open("statC.txt", ios::in);
+		file >> c;
+		file.close();
+		file.open("statC.txt", ios::out);
+		file << c + 1;
+		file.close();
+		file.open("statRes.txt", ios::out);
+		file << robC / (c + 1);
+		file.close();
+	}
 	return model::Action(moveActions, buildActions, optional<model::Specialty>());
 }
 
