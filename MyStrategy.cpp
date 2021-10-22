@@ -222,7 +222,10 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 					if (freeRobots < 12 * 3) continue;
 					prodCycle.stackedPlanet[MINES] = false;
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[FOUNDRY],
-															freeRobots,
+															freeRobots / 2,
+															optional<model::Resource>(t2r(ORE))));
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[EXTRAFOUNDRY],
+															freeRobots - freeRobots / 2,
 															optional<model::Resource>(t2r(ORE))));
 
 
@@ -252,7 +255,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 					int freeReses = game.planets[id].resources.count(t2r(METAL)) ?
 									game.planets[id].resources.at(t2r(METAL)) : 0;
 					// ----- EXTRAFOUNDRY -----
-					int freeOre = game.planets[id].resources.count(t2r(ORE)) ?
+					/*int freeOre = game.planets[id].resources.count(t2r(ORE)) ?
 								  game.planets[id].resources.at(t2r(ORE)) : 0;
 					int freeOreExtra = game.planets[prodCycle.buildingPlanet[EXTRAFOUNDRY]].resources.count(t2r(ORE)) ?
 									   game.planets[prodCycle.buildingPlanet[EXTRAFOUNDRY]].resources.at(t2r(ORE)) : 0;
@@ -260,7 +263,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[EXTRAFOUNDRY],
 															min(freeRobots, sentOre),
 															optional<model::Resource>(t2r(ORE))));
-					freeRobots = max(freeRobots - sentOre, 0);
+					freeRobots = max(freeRobots - sentOre, 0);*/
 					// ----- EXTRAFOUNDRY -----
 					freeRobots = min(freeRobots, 2 * freeReses);
 					if (freeRobots < 16 * 3) continue;
@@ -286,6 +289,26 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 									game.planets[id].resources.at(t2r(METAL)) : 0;
 					freeRobots = min(freeRobots, 2 * freeReses);
 					if (freeRobots < 16 * 3) continue;
+					prodCycle.stackedPlanet[FOUNDRY] = false;
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[MINES],
+															freeRobots / 2,
+															optional<model::Resource>()));
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[CHIP_FACTORY],
+															freeRobots / 4,
+															optional<model::Resource>(t2r(METAL))));
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[ACCUMULATOR_FACTORY],
+															freeRobots / 8,
+															optional<model::Resource>(t2r(METAL))));
+					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[REPLICATOR],
+															freeRobots -
+															(freeRobots / 2 + freeRobots / 4 + freeRobots / 8),
+															optional<model::Resource>(t2r(METAL))));
+/*					int freeRobots = max(0, (int) (game.planets[id].workerGroups[0].number -
+												   prodCycle.prodFactor * 16 / 2));
+					int freeReses = game.planets[id].resources.count(t2r(METAL)) ?
+									game.planets[id].resources.at(t2r(METAL)) : 0;
+					freeRobots = min(freeRobots, 2 * freeReses);
+					if (freeRobots < 16 * 3) continue;
 					prodCycle.stackedPlanet[EXTRAFOUNDRY] = false;
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[FOUNDRY],
 															max(freeRobots - freeReses, 0),
@@ -293,7 +316,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 					moveActions.push_back(model::MoveAction(id, prodCycle.buildingPlanet[FOUNDRY],
 															freeReses,
 															optional<model::Resource>(t2r(METAL))));
-
+*/
 
 				} else if (id == prodCycle.buildingPlanet[FURNACE]) {
 					int freeRobots = max(0,
