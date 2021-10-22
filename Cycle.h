@@ -7,8 +7,13 @@
 
 #define CYCLE_BUILD_NUM 10
 
+#include "model/Game.hpp"
+#include "model/Action.hpp"
 #include <vector>
+#include <utility>
 #include <set>
+
+#include "Terms.h"
 
 using namespace std;
 
@@ -22,6 +27,10 @@ public:
 	bool isPlanned;
 
 	float prodFactor;
+
+	bool sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
+					int capacity, vector<pair<int, float>> plKRes, vector<pair<int, float>> plKEmpty,
+					bool protectStuck = false);
 
 	Cycle();
 };
