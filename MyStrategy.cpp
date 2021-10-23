@@ -181,7 +181,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		}
 		if (!hasMissedBuild) {
 			prodCycle.isBuilt = true;
-			prodCycle.prodFactor = 0.05;//2.5;
+			prodCycle.prodFactor = 2.5;
 			cout << "работаем" << endl;
 		}
 	} else {

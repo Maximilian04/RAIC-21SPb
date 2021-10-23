@@ -24,10 +24,11 @@ bool Cycle::sendRobots(const model::Game& game, vector<model::MoveAction>& moveA
 	if (resource != -1) {
 		int freeReses = game.planets[planet].resources.count(t2r(resource)) ?
 						game.planets[planet].resources.at(t2r(resource)) : 0;
-		freeRobots = min(freeRobots, (int) ((sumKRes + sumKEmpty) / sumKRes * freeReses));
+		if (resource == METAL)
+			freeRobots = min(freeRobots, (int) ((sumKRes + sumKEmpty) / sumKRes * freeReses));
 	}
 
-	if (freeRobots < 8 * 3 && !protectStuck) return false;
+	if (freeRobots < 16 * 3 && !protectStuck) return false;
 	//!!!this->stackedPlanet[FOUNDRY] = false;
 	int leftRobots = freeRobots;
 	model::MoveAction lastAct(0, 0, 0, optional<model::Resource>());
