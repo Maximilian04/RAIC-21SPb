@@ -30,7 +30,7 @@ public:
 
 	bool sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
 					int capacity, vector<pair<int, float>> plKRes, vector<pair<int, float>> plKEmpty,
-					bool protectStuck = false);
+					int batchSize, bool protectStuck = false);
 
 	Cycle();
 };
