@@ -325,7 +325,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 											 {
 													 {prodCycle.buildingPlanet[FARM],   1.0 / 7},
 													 {prodCycle.buildingPlanet[CAREER], 1.0 * 2 / 7},
-													 {prodCycle.buildingPlanet[FARM],   1.0 * 4 / 7}},
+													 {prodCycle.buildingPlanet[MINES],   1.0 * 4 / 7}},
 													 14*3)) {
 
 						prodCycle.stackedPlanet[REPLICATOR] = false;
@@ -337,7 +337,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 										 {
 												 {prodCycle.buildingPlanet[FARM],   1.0 / 7},
 												 {prodCycle.buildingPlanet[CAREER], 1.0 * 2 / 7},
-												 {prodCycle.buildingPlanet[FARM],   1.0 * 4 / 7}},
+												 {prodCycle.buildingPlanet[MINES],   1.0 * 4 / 7}},
 												 0, true);
 				}
 			}
