@@ -20,8 +20,8 @@ using namespace std;
 
 class MyStrategy {
 public:
-    MyStrategy();
-    model::Action getAction(const model::Game& game);
+	MyStrategy();
+	model::Action getAction(const model::Game& game);
 
 	int homePlanet;
 	vector<int> enemyhomePlanets;
@@ -31,9 +31,6 @@ public:
 	void separatePlanets(const model::Game& game); // generating list of planets
 
 	bool onMySide(int id);
-	//int buildeff(vector<int> candidates);
-	//int planetType(const model::Game& game, int id);
-	//bool compareBuilds(vector<int> v1, vector<int> v2);
 
 	int resetTimer;
 	Cycle prodCycle;
