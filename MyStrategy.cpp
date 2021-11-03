@@ -14,7 +14,7 @@ int buildeff(const MyStrategy* strat, vector<int> candidates) {
 	int ans = 0;
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
-			ans += strat->prodCycle.buildcoeff[i][j] * (strat->planetDists)[candidates[i]][candidates[j]];
+			ans += strat->prodCycle.trafficCoeff[i][j] * (strat->planetDists)[candidates[i]][candidates[j]];
 		}
 	}
 
@@ -23,6 +23,7 @@ int buildeff(const MyStrategy* strat, vector<int> candidates) {
 
 struct BuildComp {
 	MyStrategy* strat;
+
 	BuildComp(MyStrategy* s) {
 		strat = s;
 	}
@@ -411,7 +412,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[FOUNDRY],      1.0 / 2},
 													 {prodCycle.buildingPlanet[EXTRAFOUNDRY], 1.0 / 2}},
 											 {},
-											 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[MINES] = false;
 					}
@@ -421,7 +422,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 											 {
 													 {prodCycle.buildingPlanet[FURNACE], 1.0 / 1}},
 											 {},
-											 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[CAREER] = false;
 					}
@@ -431,7 +432,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 											 {
 													 {prodCycle.buildingPlanet[BIOREACTOR], 1.0 / 1}},
 											 {},
-											 6*3)) {
+											 6 * 3)) {
 
 						prodCycle.stackedPlanet[FARM] = false;
 					}
@@ -444,7 +445,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[REPLICATOR],          1.0 / 8}},
 											 {
 													 {prodCycle.buildingPlanet[MINES], 1.0 / 2}},
-											 16*3)) {
+											 16 * 3)) {
 
 						prodCycle.stackedPlanet[FOUNDRY] = false;
 					}
@@ -457,7 +458,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[REPLICATOR],          1.0 / 8}},
 											 {
 													 {prodCycle.buildingPlanet[MINES], 1.0 / 2}},
-											 16*3)) {
+											 16 * 3)) {
 
 						prodCycle.stackedPlanet[EXTRAFOUNDRY] = false;
 					}
@@ -468,7 +469,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[CHIP_FACTORY], 1.0 / 2}},
 											 {
 													 {prodCycle.buildingPlanet[CAREER], 1.0 / 2}},
-											 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[FURNACE] = false;
 					}
@@ -479,7 +480,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[ACCUMULATOR_FACTORY], 1.0 / 2}},
 											 {
 													 {prodCycle.buildingPlanet[FARM], 1.0 / 2}},
-											 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[BIOREACTOR] = false;
 					}
@@ -491,7 +492,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 											 {
 													 {prodCycle.buildingPlanet[MINES],  1.0 / 3},
 													 {prodCycle.buildingPlanet[CAREER], 1.0 / 3}},
-											 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[CHIP_FACTORY] = false;
 					}
@@ -503,7 +504,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 											 {
 													 {prodCycle.buildingPlanet[MINES], 1.0 / 3},
 													 {prodCycle.buildingPlanet[FARM],  1.0 / 3}},
-											 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[ACCUMULATOR_FACTORY] = false;
 					}
@@ -515,7 +516,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[FARM],   1.0 / 7},
 													 {prodCycle.buildingPlanet[CAREER], 1.0 * 2 / 7},
 													 {prodCycle.buildingPlanet[MINES],  1.0 * 4 / 7}},
-											 14*3)) {
+											 14 * 3)) {
 
 						prodCycle.stackedPlanet[REPLICATOR] = false;
 					}

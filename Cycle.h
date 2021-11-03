@@ -26,7 +26,7 @@ public:
 	bool isBuilt;
 	bool isPlanned;
 
-	int buildcoeff[10][10];
+	vector<vector<int>> trafficCoeff;
 
 	float prodFactor;
 

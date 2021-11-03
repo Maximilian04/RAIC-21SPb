@@ -6,44 +6,42 @@
 
 Cycle::Cycle() : buildingPlanet(CYCLE_BUILD_NUM, -1), isBuilt(false),
 				 orderedPlanet(CYCLE_BUILD_NUM, false), isPlanned(false),
-				 stackedPlanet(CYCLE_BUILD_NUM, false), prodFactor(1) {
-	for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) buildcoeff[i][j] = 0;
-		}
+				 stackedPlanet(CYCLE_BUILD_NUM, false), prodFactor(1),
+				 trafficCoeff(CYCLE_BUILD_NUM, vector<int>(CYCLE_BUILD_NUM, 0)) {
 
-	buildcoeff[MINES][FOUNDRY] = 8;
-	buildcoeff[FOUNDRY][MINES] = 4;
+	trafficCoeff[MINES][FOUNDRY] = 8;
+	trafficCoeff[FOUNDRY][MINES] = 4;
 
-	buildcoeff[MINES][EXTRAFOUNDRY] = 8;
-	buildcoeff[EXTRAFOUNDRY][MINES] = 4;
+	trafficCoeff[MINES][EXTRAFOUNDRY] = 8;
+	trafficCoeff[EXTRAFOUNDRY][MINES] = 4;
 
-	buildcoeff[FOUNDRY][CHIP_FACTORY] = 2;
-	buildcoeff[EXTRAFOUNDRY][CHIP_FACTORY] = 2;
-	buildcoeff[CHIP_FACTORY][MINES] = 3;
-	buildcoeff[CHIP_FACTORY][CAREER] = 3;
+	trafficCoeff[FOUNDRY][CHIP_FACTORY] = 2;
+	trafficCoeff[EXTRAFOUNDRY][CHIP_FACTORY] = 2;
+	trafficCoeff[CHIP_FACTORY][MINES] = 3;
+	trafficCoeff[CHIP_FACTORY][CAREER] = 3;
 
-	buildcoeff[FOUNDRY][ACCUMULATOR_FACTORY] = 1;
-	buildcoeff[EXTRAFOUNDRY][ACCUMULATOR_FACTORY] = 1;
-	buildcoeff[ACCUMULATOR_FACTORY][MINES] = 2;
-	buildcoeff[ACCUMULATOR_FACTORY][FARM] = 1;
+	trafficCoeff[FOUNDRY][ACCUMULATOR_FACTORY] = 1;
+	trafficCoeff[EXTRAFOUNDRY][ACCUMULATOR_FACTORY] = 1;
+	trafficCoeff[ACCUMULATOR_FACTORY][MINES] = 2;
+	trafficCoeff[ACCUMULATOR_FACTORY][FARM] = 1;
 
-	buildcoeff[FOUNDRY][REPLICATOR] = 1;
-	buildcoeff[EXTRAFOUNDRY][REPLICATOR] = 1;
-	buildcoeff[CHIP_FACTORY][REPLICATOR] = 2;
-	buildcoeff[ACCUMULATOR_FACTORY][REPLICATOR] = 1;
-	buildcoeff[REPLICATOR][MINES] = 3;
-	buildcoeff[REPLICATOR][CAREER] = 1;
-	buildcoeff[REPLICATOR][FARM] = 1;
+	trafficCoeff[FOUNDRY][REPLICATOR] = 1;
+	trafficCoeff[EXTRAFOUNDRY][REPLICATOR] = 1;
+	trafficCoeff[CHIP_FACTORY][REPLICATOR] = 2;
+	trafficCoeff[ACCUMULATOR_FACTORY][REPLICATOR] = 1;
+	trafficCoeff[REPLICATOR][MINES] = 3;
+	trafficCoeff[REPLICATOR][CAREER] = 1;
+	trafficCoeff[REPLICATOR][FARM] = 1;
 
-	buildcoeff[CAREER][FURNACE] = 8;
-	buildcoeff[FURNACE][CAREER] = 4;
+	trafficCoeff[CAREER][FURNACE] = 8;
+	trafficCoeff[FURNACE][CAREER] = 4;
 
-	buildcoeff[FURNACE][CHIP_FACTORY] = 4;
+	trafficCoeff[FURNACE][CHIP_FACTORY] = 4;
 
-	buildcoeff[FARM][BIOREACTOR] = 4;
-	buildcoeff[BIOREACTOR][FARM] = 2;
+	trafficCoeff[FARM][BIOREACTOR] = 4;
+	trafficCoeff[BIOREACTOR][FARM] = 2;
 
-	buildcoeff[BIOREACTOR][ACCUMULATOR_FACTORY] = 2;
+	trafficCoeff[BIOREACTOR][ACCUMULATOR_FACTORY] = 2;
 }
 
 bool Cycle::sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
@@ -80,7 +78,7 @@ bool Cycle::sendRobots(const model::Game& game, vector<model::MoveAction>& moveA
 		}
 	}
 	for (pair<int, float> plK: plKEmpty) {
-		if (shortageRobots[planet][plK.first] > 1  && leftRobots > 0) {
+		if (shortageRobots[planet][plK.first] > 1 && leftRobots > 0) {
 			moveActions.push_back(model::MoveAction(planet, plK.first,
 													min(leftRobots, (int) shortageRobots[planet][plK.first]),
 													optional<model::Resource>()));
