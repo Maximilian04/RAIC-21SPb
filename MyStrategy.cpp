@@ -11,51 +11,10 @@ int planetType(const model::Game& game, int id) {
 }
 
 int buildeff(const MyStrategy* strat, vector<int> candidates) {
-	static int coeff[10][10];
-	if (coeff[MINES][FOUNDRY] != 8) { //coeff initialization
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) coeff[i][j] = 0;
-		}
-
-		coeff[MINES][FOUNDRY] = 8;
-		coeff[FOUNDRY][MINES] = 4;
-
-		coeff[MINES][EXTRAFOUNDRY] = 8;
-		coeff[EXTRAFOUNDRY][MINES] = 4;
-
-		coeff[FOUNDRY][CHIP_FACTORY] = 2;
-		coeff[EXTRAFOUNDRY][CHIP_FACTORY] = 2;
-		coeff[CHIP_FACTORY][MINES] = 3;
-		coeff[CHIP_FACTORY][CAREER] = 3;
-
-		coeff[FOUNDRY][ACCUMULATOR_FACTORY] = 1;
-		coeff[EXTRAFOUNDRY][ACCUMULATOR_FACTORY] = 1;
-		coeff[ACCUMULATOR_FACTORY][MINES] = 2;
-		coeff[ACCUMULATOR_FACTORY][FARM] = 1;
-
-		coeff[FOUNDRY][REPLICATOR] = 1;
-		coeff[EXTRAFOUNDRY][REPLICATOR] = 1;
-		coeff[CHIP_FACTORY][REPLICATOR] = 2;
-		coeff[ACCUMULATOR_FACTORY][REPLICATOR] = 1;
-		coeff[REPLICATOR][MINES] = 3;
-		coeff[REPLICATOR][CAREER] = 1;
-		coeff[REPLICATOR][FARM] = 1;
-
-		coeff[CAREER][FURNACE] = 8;
-		coeff[FURNACE][CAREER] = 4;
-
-		coeff[FURNACE][CHIP_FACTORY] = 4;
-
-		coeff[FARM][BIOREACTOR] = 4;
-		coeff[BIOREACTOR][FARM] = 2;
-
-		coeff[BIOREACTOR][ACCUMULATOR_FACTORY] = 2;
-	}
-
 	int ans = 0;
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
-			ans += coeff[i][j] * (strat->planetDists)[candidates[i]][candidates[j]];
+			ans += strat->prodCycle.buildcoeff[i][j] * (strat->planetDists)[candidates[i]][candidates[j]];
 		}
 	}
 

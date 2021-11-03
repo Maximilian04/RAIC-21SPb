@@ -7,6 +7,43 @@
 Cycle::Cycle() : buildingPlanet(CYCLE_BUILD_NUM, -1), isBuilt(false),
 				 orderedPlanet(CYCLE_BUILD_NUM, false), isPlanned(false),
 				 stackedPlanet(CYCLE_BUILD_NUM, false), prodFactor(1) {
+	for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) buildcoeff[i][j] = 0;
+		}
+
+	buildcoeff[MINES][FOUNDRY] = 8;
+	buildcoeff[FOUNDRY][MINES] = 4;
+
+	buildcoeff[MINES][EXTRAFOUNDRY] = 8;
+	buildcoeff[EXTRAFOUNDRY][MINES] = 4;
+
+	buildcoeff[FOUNDRY][CHIP_FACTORY] = 2;
+	buildcoeff[EXTRAFOUNDRY][CHIP_FACTORY] = 2;
+	buildcoeff[CHIP_FACTORY][MINES] = 3;
+	buildcoeff[CHIP_FACTORY][CAREER] = 3;
+
+	buildcoeff[FOUNDRY][ACCUMULATOR_FACTORY] = 1;
+	buildcoeff[EXTRAFOUNDRY][ACCUMULATOR_FACTORY] = 1;
+	buildcoeff[ACCUMULATOR_FACTORY][MINES] = 2;
+	buildcoeff[ACCUMULATOR_FACTORY][FARM] = 1;
+
+	buildcoeff[FOUNDRY][REPLICATOR] = 1;
+	buildcoeff[EXTRAFOUNDRY][REPLICATOR] = 1;
+	buildcoeff[CHIP_FACTORY][REPLICATOR] = 2;
+	buildcoeff[ACCUMULATOR_FACTORY][REPLICATOR] = 1;
+	buildcoeff[REPLICATOR][MINES] = 3;
+	buildcoeff[REPLICATOR][CAREER] = 1;
+	buildcoeff[REPLICATOR][FARM] = 1;
+
+	buildcoeff[CAREER][FURNACE] = 8;
+	buildcoeff[FURNACE][CAREER] = 4;
+
+	buildcoeff[FURNACE][CHIP_FACTORY] = 4;
+
+	buildcoeff[FARM][BIOREACTOR] = 4;
+	buildcoeff[BIOREACTOR][FARM] = 2;
+
+	buildcoeff[BIOREACTOR][ACCUMULATOR_FACTORY] = 2;
 }
 
 bool Cycle::sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,

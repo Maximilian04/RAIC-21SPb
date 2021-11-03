@@ -26,6 +26,8 @@ public:
 	bool isBuilt;
 	bool isPlanned;
 
+	int buildcoeff[10][10];
+
 	float prodFactor;
 
 	bool sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
