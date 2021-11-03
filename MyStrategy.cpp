@@ -12,149 +12,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	vector<model::BuildingAction> buildActions;
 
 	if (!prodCycle.isPlanned) {
-		for (int id = 0; id < game.planets.size(); ++id) { // перебираем планеты с ресурсами
-			if (game.planets[id].harvestableResource.has_value() &&
-				game.planets[id].harvestableResource.value() != t2r(STONE)) {
-				int resource = r2t(game.planets[id].harvestableResource.value());
-
-				if (prodCycle.buildingPlanet[resource] == -1 ||
-					planetDists[prodCycle.buildingPlanet[resource]][homePlanet] >
-					planetDists[id][homePlanet]) {
-
-					prodCycle.buildingPlanet[resource] = id;
-				}
-			}
-		}
-		/*prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[ORE]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[SAND]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[ORGANICS]);*/
-
-		// перебираем планеты для зданий
-		for (int id = 0; id < game.planets.size(); ++id) {
-			if (id != homePlanet &&
-				id != prodCycle.buildingPlanet[ORE] &&
-				id != prodCycle.buildingPlanet[SAND] &&
-				id != prodCycle.buildingPlanet[ORGANICS]) {
-				if (prodCycle.usedPlanets.size() < (CYCLE_BUILD_NUM - 3)) {
-					prodCycle.usedPlanets.emplace(id);
-				} else {
-					int minD = -1;
-					int minI;
-					for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
-						if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[ORE]] +
-										   planetDists[*planet][prodCycle.buildingPlanet[SAND]] +
-										   planetDists[*planet][prodCycle.buildingPlanet[ORGANICS]]) > minD) {
-							minD = planetDists[*planet][prodCycle.buildingPlanet[ORE]] +
-								   planetDists[*planet][prodCycle.buildingPlanet[SAND]] +
-								   planetDists[*planet][prodCycle.buildingPlanet[ORGANICS]];
-							minI = *planet;
-						}
-					}
-					if ((planetDists[id][prodCycle.buildingPlanet[ORE]] +
-						 planetDists[id][prodCycle.buildingPlanet[SAND]] +
-						 planetDists[id][prodCycle.buildingPlanet[ORGANICS]]) < minD) {
-						prodCycle.usedPlanets.erase(minI);
-						prodCycle.usedPlanets.emplace(id);
-					}
-				}
-			}
-		}
-
-		int minD = -1;
-		int minI;
-		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
-			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[MINES]]) < minD) {
-				minD = planetDists[*planet][prodCycle.buildingPlanet[MINES]];
-				minI = *planet;
-			}
-		}
-		prodCycle.buildingPlanet[FOUNDRY] = minI;
-		prodCycle.usedPlanets.erase(minI);
-
-		minD = -1;
-		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
-			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]]) < minD) {
-				minD = planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]];
-				minI = *planet;
-			}
-		}
-		prodCycle.buildingPlanet[EXTRAFOUNDRY] = minI;
-		prodCycle.usedPlanets.erase(minI);
-
-		minD = -1;
-		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
-			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[CAREER]]) < minD) {
-				minD = planetDists[*planet][prodCycle.buildingPlanet[CAREER]];
-				minI = *planet;
-			}
-		}
-		prodCycle.buildingPlanet[FURNACE] = minI;
-		prodCycle.usedPlanets.erase(minI);
-
-		minD = -1;
-		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
-			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[FARM]]) < minD) {
-				minD = planetDists[*planet][prodCycle.buildingPlanet[FARM]];
-				minI = *planet;
-			}
-		}
-		prodCycle.buildingPlanet[BIOREACTOR] = minI;
-		prodCycle.usedPlanets.erase(minI);
-
-		minD = -1;
-		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
-			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]]) < minD) {
-				minD = planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]];
-				minI = *planet;
-			}
-		}
-		prodCycle.buildingPlanet[CHIP_FACTORY] = minI;
-		prodCycle.usedPlanets.erase(minI);
-
-		minD = -1;
-		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
-			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]]) < minD) {
-				minD = planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]];
-				minI = *planet;
-			}
-		}
-		prodCycle.buildingPlanet[ACCUMULATOR] = minI;
-		prodCycle.usedPlanets.erase(minI);
-
-		minD = -1;
-		for (auto planet = prodCycle.usedPlanets.begin(); planet != prodCycle.usedPlanets.end(); ++planet) {
-			if (minD == -1 || (planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]]) < minD) {
-				minD = planetDists[*planet][prodCycle.buildingPlanet[FOUNDRY]];
-				minI = *planet;
-			}
-		}
-		prodCycle.buildingPlanet[REPLICATOR] = minI;
-		prodCycle.usedPlanets.erase(minI);
-
-
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[MINES]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[CAREER]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[FARM]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[FOUNDRY]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[FURNACE]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[BIOREACTOR]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[CHIP_FACTORY]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[ACCUMULATOR_FACTORY]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[REPLICATOR]);
-		prodCycle.usedPlanets.emplace(prodCycle.buildingPlanet[EXTRAFOUNDRY]);
-
-		cout << prodCycle.buildingPlanet[MINES] << endl;
-		cout << prodCycle.buildingPlanet[CAREER] << endl;
-		cout << prodCycle.buildingPlanet[FARM] << endl;
-		cout << prodCycle.buildingPlanet[FOUNDRY] << endl;
-		cout << prodCycle.buildingPlanet[FURNACE] << endl;
-		cout << prodCycle.buildingPlanet[BIOREACTOR] << endl;
-		cout << prodCycle.buildingPlanet[CHIP_FACTORY] << endl;
-		cout << prodCycle.buildingPlanet[ACCUMULATOR_FACTORY] << endl;
-		cout << prodCycle.buildingPlanet[REPLICATOR] << endl;
-		cout << prodCycle.buildingPlanet[EXTRAFOUNDRY] << endl;
-
-		prodCycle.isPlanned = true;
+		prodCycle.planBuilding(game, homePlanet, enemyHomePlanets, planetDists);
 	} else if (!prodCycle.isBuilt) {
 		int freeStone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
 							game.planets[homePlanet].resources.at(t2r(STONE)) : 0,
@@ -222,7 +80,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[FOUNDRY],      1.0 / 2},
 													 {prodCycle.buildingPlanet[EXTRAFOUNDRY], 1.0 / 2}},
 											 {},
-											 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[MINES] = false;
 					}
@@ -232,7 +90,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 											 {
 													 {prodCycle.buildingPlanet[FURNACE], 1.0 / 1}},
 											 {},
-											 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[CAREER] = false;
 					}
@@ -242,7 +100,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 											 {
 													 {prodCycle.buildingPlanet[BIOREACTOR], 1.0 / 1}},
 											 {},
-											 6*3)) {
+											 6 * 3)) {
 
 						prodCycle.stackedPlanet[FARM] = false;
 					}
@@ -255,7 +113,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[REPLICATOR],          1.0 / 8}},
 											 {
 													 {prodCycle.buildingPlanet[MINES], 1.0 / 2}},
-													 16*3)) {
+											 16 * 3)) {
 
 						prodCycle.stackedPlanet[FOUNDRY] = false;
 					}
@@ -268,7 +126,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[REPLICATOR],          1.0 / 8}},
 											 {
 													 {prodCycle.buildingPlanet[MINES], 1.0 / 2}},
-													 16*3)) {
+											 16 * 3)) {
 
 						prodCycle.stackedPlanet[EXTRAFOUNDRY] = false;
 					}
@@ -279,7 +137,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[CHIP_FACTORY], 1.0 / 2}},
 											 {
 													 {prodCycle.buildingPlanet[CAREER], 1.0 / 2}},
-													 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[FURNACE] = false;
 					}
@@ -290,7 +148,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 													 {prodCycle.buildingPlanet[ACCUMULATOR_FACTORY], 1.0 / 2}},
 											 {
 													 {prodCycle.buildingPlanet[FARM], 1.0 / 2}},
-													 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[BIOREACTOR] = false;
 					}
@@ -302,7 +160,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 											 {
 													 {prodCycle.buildingPlanet[MINES],  1.0 / 3},
 													 {prodCycle.buildingPlanet[CAREER], 1.0 / 3}},
-													 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[CHIP_FACTORY] = false;
 					}
@@ -314,7 +172,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 											 {
 													 {prodCycle.buildingPlanet[MINES], 1.0 / 3},
 													 {prodCycle.buildingPlanet[FARM],  1.0 / 3}},
-													 12*3)) {
+											 12 * 3)) {
 
 						prodCycle.stackedPlanet[ACCUMULATOR_FACTORY] = false;
 					}
@@ -325,8 +183,8 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 											 {
 													 {prodCycle.buildingPlanet[FARM],   1.0 / 7},
 													 {prodCycle.buildingPlanet[CAREER], 1.0 * 2 / 7},
-													 {prodCycle.buildingPlanet[MINES],   1.0 * 4 / 7}},
-													 14*3)) {
+													 {prodCycle.buildingPlanet[MINES],  1.0 * 4 / 7}},
+											 14 * 3)) {
 
 						prodCycle.stackedPlanet[REPLICATOR] = false;
 					}
@@ -337,8 +195,8 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 										 {
 												 {prodCycle.buildingPlanet[FARM],   1.0 / 7},
 												 {prodCycle.buildingPlanet[CAREER], 1.0 * 2 / 7},
-												 {prodCycle.buildingPlanet[MINES],   1.0 * 4 / 7}},
-												 0, true);
+												 {prodCycle.buildingPlanet[MINES],  1.0 * 4 / 7}},
+										 0, true);
 				}
 			}
 		}
@@ -382,7 +240,10 @@ void MyStrategy::init(const model::Game& game) {
 		if (!game.planets[i].workerGroups.empty() &&
 			game.planets[i].workerGroups[0].playerIndex == game.myIndex) {
 			homePlanet = i;
-			break;
+		}
+		if (!game.planets[i].workerGroups.empty() &&
+			game.planets[i].workerGroups[0].playerIndex != game.myIndex) {
+			enemyHomePlanets.push_back(i);
 		}
 	}
 

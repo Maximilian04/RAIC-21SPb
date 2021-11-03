@@ -15,10 +15,11 @@ using namespace std;
 
 class MyStrategy {
 public:
-    MyStrategy();
-    model::Action getAction(const model::Game& game);
+	MyStrategy();
+	model::Action getAction(const model::Game& game);
 
 	int homePlanet;
+	vector<int> enemyHomePlanets;
 	vector<Planet> planetInf;
 	vector<vector<int>> planetDists;
 	void init(const model::Game& game);

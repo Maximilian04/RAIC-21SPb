@@ -12,6 +12,11 @@
 #include <vector>
 #include <utility>
 #include <set>
+#include <random>
+#include <algorithm>
+#include <chrono>
+#include <map>
+#include <functional>
 
 #include "Terms.h"
 
@@ -26,13 +31,24 @@ public:
 	bool isBuilt;
 	bool isPlanned;
 
+	vector<vector<int>> trafficCoeff;
+
 	float prodFactor;
 
 	bool sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
 					int capacity, vector<pair<int, float>> plKRes, vector<pair<int, float>> plKEmpty,
 					int batchSize, bool protectStuck = false);
 
+	void planBuilding(const model::Game& game, const int& homePlanet, const vector<int>& enemyHomePlanets,
+					  const vector<vector<int>>& planetDists);
+
 	Cycle();
+
+private:
+	int buildeff(const vector<vector<int>>& planetDists, const vector<int>& candidates);
+
+	bool onMySide(const vector<vector<int>>& planetDists, const int& homePlanet, const vector<int>& enemyHomePlanets,
+				  int id);
 };
 
 
