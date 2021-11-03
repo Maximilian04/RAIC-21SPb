@@ -133,23 +133,26 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		candidates.resize(attepmts);
 
 		vector<vector<int>> ptypes; //planet type: planets' ids
-		ptypes.resize(4); // 0-2 - RES, 3 - NO RES
+		ptypes.resize(5); // 0-2 - RES, 3 - NO RES, 4 - ALL
 		for (int id = 0; id < game.planets.size(); ++id)
 		{
 			if(planetInf[id].planetOwner && !game.planets[id].building.has_value() && onMySide(id)) //is mine, doesn't have a building, and on 'my' side
 			{
 				ptypes[planetType(game, id)].push_back(id);
+				ptypes[4].push_back(id);
 			}
 		}
 
+		#if 0
 		for(int i = 0; i < 4; i++)
 		{
 			cout << ptypes[i].size() << "\t";
 		}
 		cout << "\n";
+		#endif
 
-		vector<int> avdist(4,0); //average distances between planets of one type
-		for(int t = 0; t < 4; t++)
+		vector<int> avdist(5,0); //average distances between planets of one type
+		for(int t = 0; t < 5; t++)
 		{
 			int num = 0;
 			int distsum = 0;
@@ -170,6 +173,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		for(int i = 0; i < game.planets.size(); i++)
 		{
 			int type = planetType(game, i);
+			if(type == 3) type = 4; //if a planet doesn't have resources then its `neigbours` are planets with any type nearby
 			for(int j = 0; j < ptypes[type].size(); j++)
 			{
 				if(planetDists[i][ptypes[type][j]] <= avdist[type])
@@ -222,11 +226,15 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 						bool swap = false;
 						if(usedids.find(pl) != usedids.end()) //if planet is used then try to swap it
 						{
-							newcand[i] = pl;
-							newcand[indicies[pl]] = current[i];
-							/*indicies[current[i]] = indicies[pl]; 
-							indicies[pl] = i;*/
-							swap = true;
+							if(indicies[pl] >= 3 || planetType(game, current[i]) == indicies[pl]) //check if we can swap
+							{
+								newcand[i] = pl;
+								newcand[indicies[pl]] = current[i];
+								/*indicies[current[i]] = indicies[pl]; 
+								indicies[pl] = i;*/
+								swap = true;
+							}
+							else continue; //if we can't swap just move on
 						}
 						else
 						{
