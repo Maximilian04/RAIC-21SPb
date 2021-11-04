@@ -16,7 +16,6 @@
 #include <algorithm>
 #include <chrono>
 #include <map>
-#include <functional>
 
 #include "Terms.h"
 
@@ -34,6 +33,7 @@ public:
 	vector<vector<int>> trafficCoeff;
 
 	float prodFactor;
+	int buildEff;
 
 	bool sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
 					int capacity, vector<pair<int, float>> plKRes, vector<pair<int, float>> plKEmpty,

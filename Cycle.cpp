@@ -270,7 +270,8 @@ void Cycle::planBuilding(const model::Game& game, const int& homePlanet, const v
 	for (int i = 0; i < 10; i++) {
 		cout << i << ": " << bestbuilding[i] << "\n";
 	}
-	cout << buildeff(planetDists, bestbuilding) << '\n';
+	int totalbuildeff = buildeff(planetDists, bestbuilding);
+	cout << totalbuildeff << '\n';
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
 	std::cout << "Time difference = " <<
@@ -280,5 +281,6 @@ void Cycle::planBuilding(const model::Game& game, const int& homePlanet, const v
 		buildingPlanet[i] = bestbuilding[i];
 	}
 
+	buildEff = totalbuildeff;
 	isPlanned = true;
 }

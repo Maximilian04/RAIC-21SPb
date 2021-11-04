@@ -8,6 +8,27 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	separatePlanets(game);
 	++resetTimer;
 
+	// total robots available
+	population  = 0;
+	for(int i = 0; i < game.planets.size(); i++)
+	{
+		//int or = 0;
+		for(auto wg: game.planets[i].workerGroups)
+		{
+			if(wg.playerIndex == game.myIndex)
+			{
+				population+=wg.number;
+			}
+		}
+	}
+	for(auto fw:game.flyingWorkerGroups)
+	{
+		if(fw.playerIndex == game.myIndex)
+		{
+			population += fw.number;
+		}
+	}
+
 	vector<model::MoveAction> moveActions;
 	vector<model::BuildingAction> buildActions;
 
@@ -43,6 +64,16 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			cout << "работаем" << endl;
 		}
 	} else {
+			//calculating prodFactor
+		double logistsperworkpower = ((double)prodCycle.buildEff)/5.;
+		double consuming = 19;
+
+		double workcoeff = (double)population/(consuming+logistsperworkpower)/5.;
+		double maxpos = 2.5;
+		maxpos = min(maxpos, workcoeff);
+		prodCycle.prodFactor = maxpos;
+		cout << prodCycle.prodFactor << '\n';
+		
 		if (resetTimer > 100) {
 			for (int building = 3; building < prodCycle.stackedPlanet.size(); ++building) {
 				if (prodCycle.stackedPlanet[building]) {

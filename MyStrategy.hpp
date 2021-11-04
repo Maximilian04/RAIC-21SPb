@@ -18,6 +18,7 @@ public:
 	MyStrategy();
 	model::Action getAction(const model::Game& game);
 
+	int population;
 	int homePlanet;
 	vector<int> enemyHomePlanets;
 	vector<Planet> planetInf;
