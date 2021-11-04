@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <chrono>
 #include <map>
-#include <functional>
+//#include <functional> - не юзайте, хрень какая-то кривая
 
 #include "Terms.h"
 
@@ -31,6 +31,7 @@ public:
 	bool isBuilt;
 	bool isPlanned;
 
+	int buildEff;
 	vector<vector<int>> trafficCoeff;
 
 	float prodFactor;

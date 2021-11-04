@@ -8,6 +8,27 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	separatePlanets(game);
 	++resetTimer;
 
+	// total robots available
+	population  = 0;
+	for(int i = 0; i < game.planets.size(); i++)
+	{
+		//int or = 0;
+		for(auto wg: game.planets[i].workerGroups)
+		{
+			if(wg.playerIndex == game.myIndex)
+			{
+				population+=wg.number;
+			}
+		}
+	}
+	for(auto fw:game.flyingWorkerGroups)
+	{
+		if(fw.playerIndex == game.myIndex)
+		{
+			population += fw.number;
+		}
+	}
+
 	vector<model::MoveAction> moveActions;
 	vector<model::BuildingAction> buildActions;
 
@@ -43,6 +64,25 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			cout << "работаем" << endl;
 		}
 	} else {
+		//calculating prodFactor
+		double logistsperworkpower = ((double)prodCycle.buildEff)/5.;
+		//double avwork = population - logistsperworkpower;
+		double consuming = 19;
+
+		double workcoeff = (double)population/(consuming+logistsperworkpower)/5.;
+
+		/*vector<int> maxworkers(9);
+		for(int i = 0; i < 9; i++)
+		{
+			if(i == FOUNDRY) maxworkers[i] = game.buildingProperties.at(t2b(i)).maxWorkers*2;
+			else maxworkers[i] = game.buildingProperties.at(t2b(i)).maxWorkers;
+		}
+		vector<double> workpowerperbuilding = {6.4,3.2,1.6,3.2,1.6,0.8,0.8,0.4,1};*/
+		double maxpos = 2.5;
+		maxpos = min(maxpos, workcoeff);
+		prodCycle.prodFactor = maxpos;
+		cout << prodCycle.prodFactor << '\n';
+
 		if (resetTimer > 100) {
 			for (int building = 3; building < prodCycle.stackedPlanet.size(); ++building) {
 				if (prodCycle.stackedPlanet[building]) {
