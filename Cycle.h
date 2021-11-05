@@ -23,29 +23,45 @@ using namespace std;
 
 class Cycle {
 public:
-	vector<int> buildingPlanet; // MINES -> REPLICATOR + EXTRAFOUNDRY
-	vector<bool> orderedPlanet; // MINES -> REPLICATOR + EXTRAFOUNDRY
-	vector<bool> stackedPlanet; // MINES -> REPLICATOR+ EXTRAFOUNDRY
+	vector<vector<int>> buildingPlanet; // НОВЫЙ ФОРМАТ!!!
+	vector<vector<double>> resourceTraffic; // сколько ресурса поступает от iх заводов к jм (например если надо 4 реса от MINES к FOUNDRY и #MINES = 2, #FOUNDRY = 3, то надо отсылать 4/2/3 = 2/3 реса с каждой MINES к каждой FOUNDRY)
+	vector<double> buildingWorkpower; //количество рабочей силы на iх заводах (например значение 240 на MINES, при условии, что #MINES = 2 - это по 100 рабочих на каждой MINE). Общая формула количества рабочих: ceil(buildingWorkpower[i]/buildingPlanet[i].size()/1.2)
+
+	vector<bool> orderedPlanet; // MINES -> REPLICATOR + EXTRAFOUNDRY не юзаю
+	vector<bool> stackedPlanet; // MINES -> REPLICATOR+ EXTRAFOUNDRY не юзаю
 	set<int> usedPlanets;
 	bool isBuilt;
 	bool isPlanned;
 
-	vector<vector<int>> trafficCoeff;
+	//vector<vector<int>> trafficCoeff;
+	map<int, set<pair<int,double>>> trafficCoeff; //traffic graph (diagram) trafficCoeff[i] = {{build1, logistsrequired}, {build2, logistsrequired}}
+	const static vector<double> workCoeff;//amount of workpower needed to power 1 wp on a replicator
+	const static double baseConsumption; //sum of values above
 
-	float prodFactor;
-	int buildEff;
+	vector<vector<int>> planetTypes; // 0-2 - RES, 3 - NO RES, 4 - ALL
+	vector<vector<int>> buildGraph; //graph where objects are planets connected with their 'neighbour' planets with the same type
+
+	double prodFactor;//не надо
+	int buildEff;//не надо
 
 	bool sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
 					int capacity, vector<pair<int, float>> plKRes, vector<pair<int, float>> plKEmpty,
 					int batchSize, bool protectStuck = false);
 
+	vector<vector<int>> positionBuilding(const model::Game& game, const vector<vector<int>>& planetDists, vector<double> buildPower, int attempts, int opts);
+
 	void planBuilding(const model::Game& game, const int& homePlanet, const vector<int>& enemyHomePlanets,
+					  const vector<vector<int>>& planetDists);
+
+	vector<double> getMaxWorkPower(const model::Game& game); //returns max workpower used in buildings
+
+	void init(const model::Game& game, const int& homePlanet, const vector<int>& enemyHomePlanets,
 					  const vector<vector<int>>& planetDists);
 
 	Cycle();
 
 private:
-	int buildeff(const vector<vector<int>>& planetDists, const vector<int>& candidates);
+	double logistsRequired(const vector<vector<int>>& planetDists, const vector<vector<int>>& candidates, const vector<double>& cons); //returns amount of logists to maintain the base
 
 	bool onMySide(const vector<vector<int>>& planetDists, const int& homePlanet, const vector<int>& enemyHomePlanets,
 				  int id);
