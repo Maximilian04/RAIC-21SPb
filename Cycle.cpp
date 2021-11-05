@@ -177,19 +177,6 @@ double Cycle::logistsRequired(const vector<vector<int>>& planetDists, const vect
 	return ans;
 }
 
-#if 0
-int Cycle::buildeff(const vector<vector<int>>& planetDists, const vector<int>& candidates) {
-	int ans = 0;
-	for (int i = 0; i < CYCLE_BUILD_NUM; i++) {
-		for (int j = 0; j < CYCLE_BUILD_NUM; j++) {
-			ans += trafficCoeff[i][j] * planetDists[candidates[i]][candidates[j]];
-		}
-	}
-
-	return ans;
-}
-#endif
-
 bool Cycle::onMySide(const vector<vector<int>>& planetDists, const int& homePlanet, const vector<int>& enemyHomePlanets,
 					 int id) {
 	int dist = -1;
@@ -374,49 +361,7 @@ vector<vector<int>> Cycle::positionBuilding(const model::Game& game, const vecto
 
 void Cycle::planBuilding(const model::Game& game, const int& homePlanet, const vector<int>& enemyHomePlanets,
 						 const vector<vector<int>>& planetDists)
-{	
-	#if 0
-	cout << "Calculating optimal building..." << "\n";
-	/*vector<double> bnum = getWorkPower(game, 1200);
-	for(int i = 0; i < 9; i++)
-	{
-		cout << bnum[i] << " ";
-	}
-	cout << "\n";*/
-
-	vector<double> realmax = getMaxWorkPower(game);
-	double maxpower = 0;
-	for(int i = 0; i < realmax.size(); i++) 
-	{
-		cout << realmax[i] << " ";
-		maxpower += realmax[i];
-	}
-	cout << "\n";
-	/*vector<int> buildNum(realmax.size(),0);
-	for(int i = 0; i < buildNum.size(); i++)
-	{
-		buildNum[i] = ceil(realmax[i]/(game.buildingProperties.at(t2b(i)).maxWorkers*1.2));
-	}*/
-	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-	vector<vector<int>> building = positionBuilding(game,planetDists,realmax, 10, 50);
-	if(building.size() != 1)
-	{
-		double logs = logistsRequired(planetDists, building, realmax);
-		for(int i = 0; i < building.size(); i++)
-		{
-			for(int j = 0; j < building[i].size(); j++)
-			{
-				cout << building[i][j] << " ";
-			}
-			cout << "\n";
-		}
-		cout << logs << "\n";
-		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-		std::cout << "Time difference = " <<
-		std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "ms" << std::endl;
-	}
-	isPlanned = true;
-	#endif
+{
 	cout << "Calculating optimal base plan....\n";
 	double left = 0 , right = 500; //we don't want our base to use more than 400 of wp (too much logists)
 	int count = 5;
