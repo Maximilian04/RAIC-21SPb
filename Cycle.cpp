@@ -47,7 +47,6 @@ Cycle::Cycle() : buildingPlanet(CYCLE_BUILD_NUM, -1), isBuilt(false),
 bool Cycle::sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
 					   int capacity, vector<pair<int, float>> plKRes, vector<pair<int, float>> plKEmpty,
 					   int batchSize, bool protectStuck) {
-	cout << planet << endl;
 	float sumKRes = 0, sumKEmpty = 0;
 	for (pair<int, float> plK: plKRes) {
 		sumKRes += plK.second;
@@ -68,7 +67,7 @@ bool Cycle::sendRobots(const model::Game& game, vector<model::MoveAction>& moveA
 	int leftReses = freeReses;
 
 	static vector<vector<float>> shortageRobots(game.planets.size(), vector<float>(game.planets.size(), 0));
-	for (pair<int, float> plK: plKRes) {
+	/*for (pair<int, float> plK: plKRes) {
 		if (shortageRobots[planet][plK.first] >= 1 && leftRobots > 0 && leftReses > 0) {
 			int batch = min(min(leftRobots, (int) shortageRobots[planet][plK.first]), leftReses);
 			moveActions.push_back(model::MoveAction(planet, plK.first, batch,
@@ -81,38 +80,42 @@ bool Cycle::sendRobots(const model::Game& game, vector<model::MoveAction>& moveA
 	for (pair<int, float> plK: plKEmpty) {
 		if (shortageRobots[planet][plK.first] >= 1 && leftRobots > 0) {
 			int batch = min(leftRobots, (int) shortageRobots[planet][plK.first]);
+			if (batch < 0) cout << "ATAS2 " << planet << " > " << plK.first << endl;
 			moveActions.push_back(model::MoveAction(planet, plK.first, batch,
 													optional<model::Resource>()));
 			leftRobots -= batch;
 			shortageRobots[planet][plK.first] -= batch;
 		}
-	}
+	}*/
 
 	freeRobots = leftRobots; // чтобы рассчитывать пропорции из оставшихся
 	freeReses = leftReses; // чтобы рассчитывать пропорции из оставшихся
+	int totalFreeRobots = leftRobots;
 
 	if (freeRobots < batchSize && !protectStuck) return false;
 	for (pair<int, float> plK: plKRes) {
-		int batch = (int) (plK.second / sumKRes * freeReses);
+		int batch = (int) (plK.second / sumKRes * min(freeReses, freeRobots));
 		moveActions.push_back(model::MoveAction(planet, plK.first, batch,
 												optional<model::Resource>(t2r(resource))));
 		leftRobots -= batch;
 		leftReses -= batch;
-		shortageRobots[planet][plK.first] += plK.second * freeRobots - batch;
+		shortageRobots[planet][plK.first] += plK.second * totalFreeRobots - batch;
 	}
 
 	freeRobots = leftRobots; // чтобы рассчитывать пропорции из оставшихся
 
 	for (pair<int, float> plK: plKEmpty) {
 		int batch = (int) (plK.second / sumKEmpty * freeRobots);
+		if (batch < 0) cout << "ATAS1 " << planet << " > " << plK.first << endl;
 		moveActions.push_back(model::MoveAction(planet, plK.first, batch,
 												optional<model::Resource>()));
 		leftRobots -= batch;
-		shortageRobots[planet][plK.first] += plK.second * (freeRobots + freeReses) - batch;
+		shortageRobots[planet][plK.first] += plK.second * totalFreeRobots - batch;
 	}
 	if (leftRobots > 0) {
 		//lastAct.workerNumber = leftRobots;
 		moveActions.rbegin()->workerNumber += leftRobots;
+		shortageRobots[planet][moveActions.rbegin()->targetPlanet] += leftRobots;
 	}
 	return true;
 }
