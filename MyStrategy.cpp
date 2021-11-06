@@ -32,7 +32,6 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 	observer.update(game, planetDists);
 	fc.updateSafeAdj(game);
-	
 
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, logDists);
@@ -353,7 +352,7 @@ void MyStrategy::init(const model::Game& game) {
 
 	fc.setup(planetDists, &observer);
 	fc.updateAdj(game);
-
+}
 
 void MyStrategy::separatePlanets(const model::Game& game) { // generating list of planets
 	//TODO change to true zone separating
