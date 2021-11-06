@@ -4,16 +4,42 @@
 MyStrategy::MyStrategy() : homePlanet(-1), resetTimer(0) {}
 
 model::Action MyStrategy::getAction(const model::Game& game) {
-	if (homePlanet == -1) init(game);
+	if (homePlanet == -1) 
+	{
+		init(game);
+		prodCycle.init(game, homePlanet, enemyHomePlanets, planetDists);
+	}
 	separatePlanets(game);
 	++resetTimer;
+
+	// total robots available
+	population  = 0;
+	for(int i = 0; i < game.planets.size(); i++)
+	{
+		//int or = 0;
+		for(auto wg: game.planets[i].workerGroups)
+		{
+			if(wg.playerIndex == game.myIndex)
+			{
+				population+=wg.number;
+			}
+		}
+	}
+	for(auto fw:game.flyingWorkerGroups)
+	{
+		if(fw.playerIndex == game.myIndex)
+		{
+			population += fw.number;
+		}
+	}
 
 	vector<model::MoveAction> moveActions;
 	vector<model::BuildingAction> buildActions;
 
 	if (!prodCycle.isPlanned) {
-		prodCycle.planBuilding(game, homePlanet, enemyHomePlanets, planetDists);
+		prodCycle.planBuilding(game, homePlanet, enemyHomePlanets, logDists);
 	} else if (!prodCycle.isBuilt) {
+#if 0 //TODO: отредачить под новый формат buildPlanets
 		int freeStone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
 							game.planets[homePlanet].resources.at(t2r(STONE)) : 0,
 							!game.planets[homePlanet].workerGroups.empty() ?
@@ -45,7 +71,10 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			prodCycle.prodFactor = 2.5;
 			cout << "работаем" << endl;
 		}
+#endif
 	} else {
+			
+#if 0 //TODO: отредачить под новый формат buildPlanets
 		if (resetTimer > 100) {
 			for (int building = 3; building < prodCycle.stackedPlanet.size(); ++building) {
 				if (prodCycle.stackedPlanet[building]) {
@@ -219,6 +248,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 				}
 			}
 		}
+#endif
 	}
 
 	if (game.currentTick == 999) {
@@ -274,6 +304,7 @@ void MyStrategy::init(const model::Game& game) {
 	}
 
 	planetDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), 0));
+	logDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), 0));
 	int count = game.planets.size();
 	while (count--) {
 		for (int i = 0; i < game.planets.size(); ++i) {
@@ -296,6 +327,24 @@ void MyStrategy::init(const model::Game& game) {
 						}
 					}
 				}
+
+				if ((abs(game.planets[i].x - game.planets[j].x) +
+					 abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance + game.logisticsUpgrade)) {
+					logDists[i][j] = logDists[j][i] = abs(game.planets[i].x - game.planets[j].x) +
+															abs(game.planets[i].y - game.planets[j].y);
+
+					for (int m = 0; m < game.planets.size(); ++m) {
+						if (m == i || m == j) continue;
+						if (logDists[m][i] != 0 &&
+							(logDists[m][j] == 0 || logDists[m][j] > (logDists[m][i] + logDists[i][j]))) {
+							logDists[m][j] = logDists[j][m] = logDists[m][i] + logDists[i][j];
+						}
+						if (logDists[m][j] != 0 &&
+							(logDists[m][i] == 0 || logDists[m][i] > (logDists[m][j] + logDists[i][j]))) {
+							logDists[m][i] = logDists[i][m] = logDists[m][j] + logDists[i][j];
+						}
+					}
+				}
 			}
 		}
 	}
@@ -306,7 +355,7 @@ void MyStrategy::init(const model::Game& game) {
 		}
 		cout << endl;
 	}*/
-
+#if 0
 	prodCycle.buildingPlanet = vector<int>(9, -1);
 
 	vector<vector<int>> adj;
@@ -320,7 +369,9 @@ void MyStrategy::init(const model::Game& game) {
 	}
 
 	fc.setup(planetDists, adj);
+	//prodCycle.buildingPlanet = vector<int>(9, -1);
 }
+#endif
 
 void MyStrategy::separatePlanets(const model::Game& game) { // generating list of planets
 	//TODO change to true zone separating
