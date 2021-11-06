@@ -337,15 +337,6 @@ void MyStrategy::init(const model::Game& game) {
 		}
 	}
 
-	/*for (int i = 0; i < game.planets.size(); ++i) {
-		for (int j = 0; j < game.planets.size(); ++j) {
-			cout << planetDists[i][j] << " ";
-		}
-		cout << endl;
-	}*/
-#if 0
-	prodCycle.buildingPlanet = vector<int>(9, -1);
-
 	vector<vector<int>> adj;
 
 	for (int i = 0; i < game.planets.size(); ++i) {
@@ -357,9 +348,7 @@ void MyStrategy::init(const model::Game& game) {
 	}
 
 	fc.setup(planetDists, adj);
-	//prodCycle.buildingPlanet = vector<int>(9, -1);
 }
-#endif
 
 void MyStrategy::separatePlanets(const model::Game& game) { // generating list of planets
 	//TODO change to true zone separating
