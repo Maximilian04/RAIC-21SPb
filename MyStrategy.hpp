@@ -20,10 +20,12 @@ public:
 	MyStrategy();
 	model::Action getAction(const model::Game& game);
 
+	int population;
 	int homePlanet;
 	vector<int> enemyHomePlanets;
 	vector<Planet> planetInf;
 	vector<vector<int>> planetDists;
+	vector<vector<int>> logDists; //distances between planets for logists
 	void init(const model::Game& game);
 	void separatePlanets(const model::Game& game);
 
