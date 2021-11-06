@@ -14,6 +14,11 @@
 
 using namespace std;
 
+#define IGNORANCE 0
+#define AVOIDANCE 1
+#define AVOIDANCE_WITH_ATTACK 2
+
+
 class FlyingGroup
 {
 public:
@@ -24,6 +29,8 @@ public:
     int fr, to;
     // Number of wrokers in group
     int num;
+    // Safety type
+    int safety;
     // Resource to carry
     optional<model::Resource> res;
     // Is trip for group finished
@@ -31,8 +38,10 @@ public:
     // Array of the planets along the way
     vector<int> path;
 
-    FlyingGroup(int fr, int to, int num, optional<model::Resource> res);
+    FlyingGroup(int fr, int to, int num, optional<model::Resource> res, int safety=IGNORANCE);
+
     void setPath(vector<int> path, vector<vector<int>> &d);
+
     optional<model::MoveAction> step(vector<vector<int>> &d);
 };
 

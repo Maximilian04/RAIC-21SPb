@@ -60,8 +60,8 @@ set (SRC
         Terms.cpp
         Planet.cpp
         Cycle.cpp
-        FlyingGroup.cpp
         FlyingController.cpp
+        FlyingGroup.cpp
 )
 SET_SOURCE_FILES_PROPERTIES(${HEADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
 include_directories(".")

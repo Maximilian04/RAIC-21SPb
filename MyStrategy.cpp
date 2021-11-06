@@ -30,6 +30,10 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	vector<model::MoveAction> moveActions;
 	vector<model::BuildingAction> buildActions;
 
+	observer.update(game, planetDists);
+	fc.updateSafeAdj(game);
+	
+
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, logDists);
 	} else if (!prodCycle.isBuilt) {
@@ -50,9 +54,6 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			} else {
 				if (freeStone < stoneCost(building == EXTRAFOUNDRY ? FOUNDRY : building)) continue;
 
-				//moveActions.push_back(model::MoveAction(homePlanet, prodCycle.buildingPlanet[building],
-				//										stoneCost(building == EXTRAFOUNDRY ? FOUNDRY : building),
-				//										optional<model::Resource>(t2r(STONE))));
 				fc.send(homePlanet, prodCycle.buildingPlanet[building],
 														stoneCost(building == EXTRAFOUNDRY ? FOUNDRY : building),
 														optional<model::Resource>(t2r(STONE)));
@@ -78,21 +79,6 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 					}
 					int fr = prodCycle.buildingPlanet[building];
 					int freeRobots = game.planets[fr].workerGroups[0].number - fc.onFlightAt(fr);
-					
-					/*moveActions.push_back(
-							model::MoveAction(prodCycle.buildingPlanet[building], prodCycle.buildingPlanet[CAREER],
-											  freeRobots / 3,
-											  optional<model::Resource>()));
-					moveActions.push_back(
-							model::MoveAction(prodCycle.buildingPlanet[building], prodCycle.buildingPlanet[FARM],
-											  freeRobots / 3,
-											  optional<model::Resource>()));
-					moveActions.push_back(
-							model::MoveAction(prodCycle.buildingPlanet[building], prodCycle.buildingPlanet[MINES],
-											  freeRobots -
-											  2 * freeRobots / 3,
-											  optional<model::Resource>()));
-					*/
 
 					fc.send(fr, prodCycle.buildingPlanet[CAREER],
 											  freeRobots / 3,
@@ -365,21 +351,9 @@ void MyStrategy::init(const model::Game& game) {
 		}
 	}
 
-	vector<vector<int>> adj;
+	fc.setup(planetDists, &observer);
+	fc.updateAdj(game);
 
-	for (int i = 0; i < game.planets.size(); ++i) {
-		adj.push_back({});
-		for (int j = 0; j < game.planets.size(); ++j) {
-			if ((abs(game.planets[i].x - game.planets[j].x) + abs(game.planets[i].y - game.planets[j].y) <=
-				 game.maxTravelDistance))
-				adj[i].push_back(j);
-		}
-	}
-
-	fc.setup(planetDists, adj);
-	cout << "setup is competed!" << '\n';
-	//prodCycle.buildingPlanet = vector<int>(9, -1);
-}
 
 void MyStrategy::separatePlanets(const model::Game& game) { // generating list of planets
 	//TODO change to true zone separating

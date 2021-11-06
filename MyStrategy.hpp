@@ -4,6 +4,7 @@
 #include "model/Game.hpp"
 #include "model/Action.hpp"
 
+#include "Observer.h"
 #include "FlyingController.h"
 #include "Cycle.h"
 #include "Planet.h"
@@ -34,6 +35,7 @@ public:
 	Cycle prodCycle;
 
 	FlyingController fc;
+	Observer observer;
 };
 
 #endif

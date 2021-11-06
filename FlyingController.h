@@ -10,10 +10,11 @@
 #include <algorithm>
 #include <chrono>
 #include <map>
-//#include <functional>
 #include <iostream>
+#include <queue>
 
 #include "FlyingGroup.h"
+#include "Observer.h"
 
 using namespace std;
 
@@ -25,15 +26,28 @@ public:
     vector<vector<int>> d;
     // Adjacent planets in format adj[i] = all planets adjacent with planet i
     vector<vector<int>> adj;
-
+    // Adjacent planets without enemies in format adj[i] = all planets adjacent with planet i
+    vector<vector<int>> safeAdj;
+    // All groups under control
     vector<FlyingGroup> groups;
 
+    Observer* observer;
+
     FlyingController();
-    void setup(vector<vector<int>> distances, vector<vector<int>> adjacent);
+
+    void setup(vector<vector<int>> distances, Observer* observer);
+
+    vector<int> findPathDijkstra(FlyingGroup group);
+
     vector<int> findPath(FlyingGroup group);
+
     int onFlightAt(int planet);
-    void send(int fr, int to, int num, optional<model::Resource> res);
+
+    void send(int fr, int to, int num, optional<model::Resource> res, int safetyMode=IGNORANCE);
+
     vector<model::MoveAction> update();
+    void updateAdj(const model::Game& game);
+    void updateSafeAdj(const model::Game& game);
 };
 
 #endif //MYSTRATEGY_CPP_FLYING_CONTROLLER
