@@ -15,6 +15,12 @@
 
 using namespace std;
 
+enum {
+	WORKER = 0,
+	LOGIST = 1,
+	COMBAT = 2,
+};
+
 class MyStrategy {
 public:
 	MyStrategy();
@@ -33,6 +39,8 @@ public:
 
 	int resetTimer;
 	Cycle prodCycle;
+
+	int role;
 
 	FlyingController fc;
 	Observer observer;

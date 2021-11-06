@@ -36,6 +36,35 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, logDists);
+		//role initialization
+		vector<pair<int,int>> baseDists; //bAsed LMAO||| first - distance, second - home planet id
+		for(int id: teamHomePlanets)
+		{
+			int maxdist = 0;
+			for(int i = 0; i < prodCycle.buildingPlanet.size(); i++)
+			{
+				for(int j = 0; j < prodCycle.buildingPlanet[i].size(); j++)
+				{
+					maxdist = max(maxdist, planetDists[id][prodCycle.buildingPlanet[i][j]]);
+				}
+			}
+			baseDists.push_back(pair<int,int>(maxdist, id));
+		}
+		
+		sort(baseDists.begin(), baseDists.end(), [](pair<int,int> a, pair<int,int> b) {
+        	if(a.first == b.first) return a.second < b.second;
+			else return a.first < b.first;
+    	});
+
+		for(int i = 0; i < baseDists.size(); i++)
+		{
+			if(baseDists[i].second == homePlanet)
+			{
+				role = i;
+				break;
+			}
+		}
+		cout << "\nrole:" << role;
 	} else if (!prodCycle.isBuilt) {
 #if 0 //TODO: отредачить под новый формат buildPlanets
 		int freeStone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
