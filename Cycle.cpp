@@ -106,49 +106,62 @@ bool Cycle::sendRobots(const model::Game& game, vector<model::MoveAction>& moveA
 	if (resource != -1) {
 		freeReses = game.planets[planet].resources.count(t2r(resource)) ?
 					game.planets[planet].resources.at(t2r(resource)) : 0;
-		if (resource == METAL)
-			freeRobots = min(freeRobots, (int) ((sumKRes + sumKEmpty) / sumKRes * freeReses));
+		//if (resource == METAL)
+		//	freeRobots = min(freeRobots, (int) ((sumKRes + sumKEmpty) / sumKRes * freeReses));
 	}
 	int leftRobots = freeRobots;
+	int leftReses = freeReses;
 
 	static vector<vector<float>> shortageRobots(game.planets.size(), vector<float>(game.planets.size(), 0));
-	for (pair<int, float> plK: plKRes) {
-		if (shortageRobots[planet][plK.first] > 1 && leftRobots > 0 && freeReses > 0) {
-			moveActions.push_back(model::MoveAction(planet, plK.first,
-													min(min(leftRobots, (int) shortageRobots[planet][plK.first]),
-														freeReses),
+	/*for (pair<int, float> plK: plKRes) {
+		if (shortageRobots[planet][plK.first] >= 1 && leftRobots > 0 && leftReses > 0) {
+			int batch = min(min(leftRobots, (int) shortageRobots[planet][plK.first]), leftReses);
+			moveActions.push_back(model::MoveAction(planet, plK.first, batch,
 													optional<model::Resource>(t2r(resource))));
-			leftRobots -= min(min(leftRobots, (int) shortageRobots[planet][plK.first]),
-							  freeReses);
-			shortageRobots[planet][plK.first] -= min(freeRobots, (int) shortageRobots[planet][plK.first]);
+			leftRobots -= batch;
+			leftReses -= batch;
+			shortageRobots[planet][plK.first] -= batch;
 		}
 	}
 	for (pair<int, float> plK: plKEmpty) {
-		if (shortageRobots[planet][plK.first] > 1 && leftRobots > 0) {
-			moveActions.push_back(model::MoveAction(planet, plK.first,
-													min(leftRobots, (int) shortageRobots[planet][plK.first]),
+		if (shortageRobots[planet][plK.first] >= 1 && leftRobots > 0) {
+			int batch = min(leftRobots, (int) shortageRobots[planet][plK.first]);
+			if (batch < 0) cout << "ATAS2 " << planet << " > " << plK.first << endl;
+			moveActions.push_back(model::MoveAction(planet, plK.first, batch,
 													optional<model::Resource>()));
-			leftRobots -= min(freeRobots, (int) shortageRobots[planet][plK.first]);
-			shortageRobots[planet][plK.first] -= min(freeRobots, (int) shortageRobots[planet][plK.first]);
+			leftRobots -= batch;
+			shortageRobots[planet][plK.first] -= batch;
 		}
-	}
+	}*/
+
+	freeRobots = leftRobots; // чтобы рассчитывать пропорции из оставшихся
+	freeReses = leftReses; // чтобы рассчитывать пропорции из оставшихся
+	int totalFreeRobots = leftRobots;
 
 	if (freeRobots < batchSize && !protectStuck) return false;
 	for (pair<int, float> plK: plKRes) {
-		moveActions.push_back(model::MoveAction(planet, plK.first, (int) (plK.second * freeRobots),
+		int batch = (int) (plK.second / sumKRes * min(freeReses, freeRobots));
+		moveActions.push_back(model::MoveAction(planet, plK.first, batch,
 												optional<model::Resource>(t2r(resource))));
-		leftRobots -= (int) (plK.second * freeRobots);
-		shortageRobots[planet][plK.first] += plK.second * freeRobots - ((int) (plK.second * freeRobots));
+		leftRobots -= batch;
+		leftReses -= batch;
+		shortageRobots[planet][plK.first] += plK.second * totalFreeRobots - batch;
 	}
+
+	freeRobots = leftRobots; // чтобы рассчитывать пропорции из оставшихся
+
 	for (pair<int, float> plK: plKEmpty) {
-		moveActions.push_back(model::MoveAction(planet, plK.first, (int) (plK.second * freeRobots),
+		int batch = (int) (plK.second / sumKEmpty * freeRobots);
+		if (batch < 0) cout << "ATAS1 " << planet << " > " << plK.first << endl;
+		moveActions.push_back(model::MoveAction(planet, plK.first, batch,
 												optional<model::Resource>()));
-		leftRobots -= (int) (plK.second * freeRobots);
-		shortageRobots[planet][plK.first] += plK.second * freeRobots - ((int) (plK.second * freeRobots));
+		leftRobots -= batch;
+		shortageRobots[planet][plK.first] += plK.second * totalFreeRobots - batch;
 	}
 	if (leftRobots > 0) {
 		//lastAct.workerNumber = leftRobots;
 		moveActions.rbegin()->workerNumber += leftRobots;
+		shortageRobots[planet][moveActions.rbegin()->targetPlanet] += leftRobots;
 	}
 	return true;
 }
