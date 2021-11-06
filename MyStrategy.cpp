@@ -354,6 +354,7 @@ void MyStrategy::init(const model::Game& game) {
 	fc.setup(planetDists, &observer);
 	fc.updateAdj(game);
 
+}
 
 void MyStrategy::separatePlanets(const model::Game& game) { // generating list of planets
 	//TODO change to true zone separating
