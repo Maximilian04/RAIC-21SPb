@@ -32,6 +32,8 @@ set(HEADERS
         Terms.h
         Planet.h
         Cycle.h
+        FlyingGroup.h
+        FlyingController.h
 )
 set (SRC
     "MyStrategy.cpp"

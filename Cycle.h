@@ -51,12 +51,11 @@ public:
 
 	vector<vector<int>> positionBuilding(const model::Game& game, const vector<vector<int>>& planetDists, vector<double> buildPower, int attempts, int opts);
 
-	void planBuilding(const model::Game& game, const int& homePlanet, const vector<int>& enemyHomePlanets,
-					  const vector<vector<int>>& planetDists);
+	void planBuilding(const model::Game& game, const vector<vector<int>>& planetDists);
 
 	vector<double> getMaxWorkPower(const model::Game& game); //returns max workpower used in buildings
 
-	void init(const model::Game& game, const int& homePlanet, const vector<int>& enemyHomePlanets,
+	void init(const model::Game& game, const set<int>& teammates, const vector<int>& teamHomePlanets, const vector<int>& enemyHomePlanets,
 					  const vector<vector<int>>& planetDists);
 
 	Cycle();
@@ -64,7 +63,7 @@ public:
 private:
 	double logistsRequired(const vector<vector<int>>& planetDists, const vector<vector<int>>& candidates, const vector<double>& cons); //returns amount of logists to maintain the base
 
-	bool onMySide(const vector<vector<int>>& planetDists, const int& homePlanet, const vector<int>& enemyHomePlanets,
+	bool onMySide(const vector<vector<int>>& planetDists, const vector<int>& teamHomePlanets, const vector<int>& enemyHomePlanets,
 				  int id);
 };
 

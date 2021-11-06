@@ -41,4 +41,3 @@ optional<model::MoveAction> FlyingGroup::step(vector<vector<int>> &d)
     timeFromPrev += 1;
 
     return nullopt;
-}

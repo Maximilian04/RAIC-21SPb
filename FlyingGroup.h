@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <chrono>
 #include <map>
-#include <functional>
+//#include <functional>
 
 using namespace std;
 
@@ -43,8 +43,6 @@ public:
     void setPath(vector<int> path, vector<vector<int>> &d);
 
     optional<model::MoveAction> step(vector<vector<int>> &d);
-
-
 };
 
 #endif //MYSTRATEGY_CPP_FLYING_GROUP
