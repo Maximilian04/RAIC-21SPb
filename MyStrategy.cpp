@@ -11,6 +11,12 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	vector<model::MoveAction> moveActions;
 	vector<model::BuildingAction> buildActions;
 
+	observer.update(game, planetDists);
+
+	for (int i = 0; i < game.planets.size(); i++)
+		if (observer.bottleneckTraffic[i] > 0)
+			cout << i << " has " << observer.bottleneckTraffic[i] << endl;
+
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, homePlanet, enemyHomePlanets, planetDists);
 	} else if (!prodCycle.isBuilt) {
@@ -30,9 +36,6 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			} else {
 				if (freeStone < stoneCost(building == EXTRAFOUNDRY ? FOUNDRY : building)) continue;
 
-				//moveActions.push_back(model::MoveAction(homePlanet, prodCycle.buildingPlanet[building],
-				//										stoneCost(building == EXTRAFOUNDRY ? FOUNDRY : building),
-				//										optional<model::Resource>(t2r(STONE))));
 				fc.send(homePlanet, prodCycle.buildingPlanet[building],
 														stoneCost(building == EXTRAFOUNDRY ? FOUNDRY : building),
 														optional<model::Resource>(t2r(STONE)));
@@ -55,21 +58,6 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 					}
 					int fr = prodCycle.buildingPlanet[building];
 					int freeRobots = game.planets[fr].workerGroups[0].number - fc.onFlightAt(fr);
-					
-					/*moveActions.push_back(
-							model::MoveAction(prodCycle.buildingPlanet[building], prodCycle.buildingPlanet[CAREER],
-											  freeRobots / 3,
-											  optional<model::Resource>()));
-					moveActions.push_back(
-							model::MoveAction(prodCycle.buildingPlanet[building], prodCycle.buildingPlanet[FARM],
-											  freeRobots / 3,
-											  optional<model::Resource>()));
-					moveActions.push_back(
-							model::MoveAction(prodCycle.buildingPlanet[building], prodCycle.buildingPlanet[MINES],
-											  freeRobots -
-											  2 * freeRobots / 3,
-											  optional<model::Resource>()));
-					*/
 
 					fc.send(fr, prodCycle.buildingPlanet[CAREER],
 											  freeRobots / 3,
