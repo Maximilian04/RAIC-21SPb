@@ -31,47 +31,9 @@ public:
     // Array of the planets along the way
     vector<int> path;
 
-    FlyingGroup(int fr, int to, int num, optional<model::Resource> res)
-    {
-        this->fr = fr;
-        this->to = to;
-        this->num = num;
-        this->res = res;
-        isFinished = false;
-    }
-
-    void setPath(vector<int> path, vector<vector<int>> &d)
-    {
-        this->path = path;
-        timeToNext = 1;
-        timeFromPrev = 0;
-    }
-
-    optional<model::MoveAction> step(vector<vector<int>> &d)
-    {
-        if (isFinished)
-            return nullopt;
-
-        if (timeToNext == 1)
-        {
-            if (path.size() != 1)
-            {
-                timeToNext = d[path[0]][path[1]];
-                timeFromPrev = 0;
-                return model::MoveAction(path[0], path[1], num, res);
-            }
-            else
-                isFinished = true;
-        }
-
-        if (timeToNext == 2)
-            path.erase(path.begin());
-        
-        timeToNext -= 1;
-        timeFromPrev += 1;
-
-        return nullopt;
-    }
+    FlyingGroup(int fr, int to, int num, optional<model::Resource> res);
+    void setPath(vector<int> path, vector<vector<int>> &d);
+    optional<model::MoveAction> step(vector<vector<int>> &d);
 };
 
 #endif //MYSTRATEGY_CPP_FLYING_GROUP

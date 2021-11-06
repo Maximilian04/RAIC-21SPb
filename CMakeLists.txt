@@ -32,6 +32,8 @@ set(HEADERS
         Terms.h
         Planet.h
         Cycle.h
+        FlyingGroup.h
+        FlyingController.h
 )
 set (SRC
     "MyStrategy.cpp"
@@ -58,6 +60,8 @@ set (SRC
         Terms.cpp
         Planet.cpp
         Cycle.cpp
+        FlyingGroup.cpp
+        FlyingController.cpp
 )
 SET_SOURCE_FILES_PROPERTIES(${HEADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
 include_directories(".")

@@ -4,8 +4,7 @@
 MyStrategy::MyStrategy() : homePlanet(-1), resetTimer(0) {}
 
 model::Action MyStrategy::getAction(const model::Game& game) {
-	if (homePlanet == -1) 
-	{
+	if (homePlanet == -1) {
 		init(game);
 		prodCycle.init(game, teamPlayers, teamHomePlanets, enemyHomePlanets, logDists);
 	}
@@ -13,22 +12,17 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	++resetTimer;
 
 	// total robots available
-	population  = 0;
-	for(int i = 0; i < game.planets.size(); i++)
-	{
+	population = 0;
+	for (int i = 0; i < game.planets.size(); i++) {
 		//int or = 0;
-		for(auto wg: game.planets[i].workerGroups)
-		{
-			if(wg.playerIndex == game.myIndex)
-			{
-				population+=wg.number;
+		for (auto wg: game.planets[i].workerGroups) {
+			if (wg.playerIndex == game.myIndex) {
+				population += wg.number;
 			}
 		}
 	}
-	for(auto fw:game.flyingWorkerGroups)
-	{
-		if(fw.playerIndex == game.myIndex)
-		{
+	for (auto fw: game.flyingWorkerGroups) {
+		if (fw.playerIndex == game.myIndex) {
 			population += fw.number;
 		}
 	}
@@ -73,7 +67,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		}
 #endif
 	} else {
-			
+
 #if 0 //TODO: отредачить под новый формат buildPlanets
 		if (resetTimer > 100) {
 			for (int building = 3; building < prodCycle.stackedPlanet.size(); ++building) {
@@ -283,8 +277,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	}
 
 	vector<model::MoveAction> addMoves = fc.update();
-	for (model::MoveAction move : addMoves)
-	{
+	for (model::MoveAction move: addMoves) {
 		moveActions.push_back(move);
 	}
 
@@ -292,10 +285,8 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 }
 
 void MyStrategy::init(const model::Game& game) {
-	for(int i = 0; i < game.players.size(); i++)
-	{
-		if(game.players[i].teamIndex == 0) 
-		{
+	for (int i = 0; i < game.players.size(); i++) {
+		if (game.players[i].teamIndex == 0) {
 			teamPlayers.insert(i);
 			cout << i;
 		}
@@ -308,13 +299,13 @@ void MyStrategy::init(const model::Game& game) {
 		}
 
 		if (!game.planets[i].workerGroups.empty() &&
-			teamPlayers.find(game.planets[i].workerGroups[0].playerIndex)!=teamPlayers.end()) {
+			teamPlayers.find(game.planets[i].workerGroups[0].playerIndex) != teamPlayers.end()) {
 			teamHomePlanets.push_back(i);
 			//cout << i << '\n';
 		}
 
 		if (!game.planets[i].workerGroups.empty() &&
-			teamPlayers.find(game.planets[i].workerGroups[0].playerIndex)==teamPlayers.end()) {
+			teamPlayers.find(game.planets[i].workerGroups[0].playerIndex) == teamPlayers.end()) {
 			enemyHomePlanets.push_back(i);
 		}
 	}
@@ -356,7 +347,7 @@ void MyStrategy::init(const model::Game& game) {
 				if ((abs(game.planets[i].x - game.planets[j].x) +
 					 abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance + game.logisticsUpgrade)) {
 					logDists[i][j] = logDists[j][i] = abs(game.planets[i].x - game.planets[j].x) +
-															abs(game.planets[i].y - game.planets[j].y);
+													  abs(game.planets[i].y - game.planets[j].y);
 
 					for (int m = 0; m < game.planets.size(); ++m) {
 						if (m == i || m == j) continue;
@@ -379,7 +370,8 @@ void MyStrategy::init(const model::Game& game) {
 	for (int i = 0; i < game.planets.size(); ++i) {
 		adj.push_back({});
 		for (int j = 0; j < game.planets.size(); ++j) {
-			if ((abs(game.planets[i].x - game.planets[j].x) + abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance))
+			if ((abs(game.planets[i].x - game.planets[j].x) + abs(game.planets[i].y - game.planets[j].y) <=
+				 game.maxTravelDistance))
 				adj[i].push_back(j);
 		}
 	}
