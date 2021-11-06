@@ -4,6 +4,7 @@
 #include "model/Game.hpp"
 #include "model/Action.hpp"
 
+#include "FlyingController.h"
 #include "Cycle.h"
 #include "Planet.h"
 #include "Terms.h"
@@ -23,10 +24,12 @@ public:
 	vector<Planet> planetInf;
 	vector<vector<int>> planetDists;
 	void init(const model::Game& game);
-	void separatePlanets(const model::Game& game); // generating list of planets
+	void separatePlanets(const model::Game& game);
 
 	int resetTimer;
 	Cycle prodCycle;
+
+	FlyingController fc;
 };
 
 #endif

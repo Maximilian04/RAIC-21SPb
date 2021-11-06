@@ -19,6 +19,7 @@
 #include <functional>
 
 #include "Terms.h"
+#include "FlyingController.h"
 
 using namespace std;
 
@@ -35,7 +36,7 @@ public:
 
 	float prodFactor;
 
-	bool sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
+	bool sendRobots(const model::Game& game, FlyingController &fc, int planet, int resource,
 					int capacity, vector<pair<int, float>> plKRes, vector<pair<int, float>> plKEmpty,
 					int batchSize, bool protectStuck = false);
 
