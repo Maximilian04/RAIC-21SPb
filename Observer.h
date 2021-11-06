@@ -19,6 +19,8 @@ public:
     vector<double> bottleneckTraffic;
     vector<vector<int>> bottleneckTrafficTimed;
 
+    vector<int> enemies;
+
     Observer()
     {
     }
@@ -32,11 +34,11 @@ public:
             bottleneckTraffic.assign(game.planets.size(), 0);
 
             bottleneckTrafficTimed.assign(game.planets.size(), vector<int>(OBSERVER_PERIOD, 0));
+            
         }
 
         // Count enemies on every planet
-        vector<int> enemies(game.planets.size(), 0);
-
+        enemies.assign(game.planets.size(), 0);
         for (int i = 0; i < game.planets.size(); i++)
         {
             int enemiesNum = 0;
@@ -70,6 +72,17 @@ public:
 
             bottleneckTraffic[i] = avg;
         }
+    }
+
+    // TODO: use flying groups to predict enemies number on planet (btw doesn`t really matter)
+    bool isOurs(int planet)
+    {
+        return enemies[planet] == 0;
+    }
+
+    int size()
+    {
+        return enemies.size();
     }
 };
 

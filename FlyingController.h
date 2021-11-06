@@ -10,10 +10,11 @@
 #include <algorithm>
 #include <chrono>
 #include <map>
-#include <functional>
 #include <iostream>
+#include <queue>
 
 #include "FlyingGroup.h"
+#include "Observer.h"
 
 using namespace std;
 
@@ -25,76 +26,28 @@ public:
     vector<vector<int>> d;
     // Adjacent planets in format adj[i] = all planets adjacent with planet i
     vector<vector<int>> adj;
-
+    // Adjacent planets without enemies in format adj[i] = all planets adjacent with planet i
+    vector<vector<int>> safeAdj;
+    // All groups under control
     vector<FlyingGroup> groups;
 
-    FlyingController()
-    {
+    Observer* observer;
 
-    }
+    FlyingController();
 
-    void setup(vector<vector<int>> distances, vector<vector<int>> adjacent)
-    {
-        d = distances;
-        adj = adjacent;
-    }
-    
-    vector<int> findPath(FlyingGroup group)
-    {
-        int to = group.to;
-        int fr = group.fr;
+    void setup(vector<vector<int>> distances, Observer* observer);
 
-        vector<int> path = {to};
+    vector<int> findPathDijkstra(FlyingGroup group);
 
-        int prev = to;
-        while (prev != fr)
-        {
-            for (int v : adj[prev])
-            {
-                if (d[fr][v] + d[v][prev] == d[fr][prev] and v != prev)
-                {
-                    path.push_back(v);
-                    prev = v;
-                }
-            }
-        }
-        
-        reverse(path.begin(), path.end());
+    vector<int> findPath(FlyingGroup group);
 
-        return path;
-    }
-    
-    int onFlightAt(int planet)
-    {
-        int res = 0;
-        for (FlyingGroup group : groups)
-            if (!group.isFinished && group.path.size() != 1 && (group.path[0] == planet && group.timeToNext == 1))
-                res += group.num;
+    int onFlightAt(int planet);
 
-        return res;
-    }
+    void send(int fr, int to, int num, optional<model::Resource> res, int safetyMode=IGNORANCE);
 
-    void send(int fr, int to, int num, optional<model::Resource> res)
-    {
-        FlyingGroup group(fr, to, num, res);
-        group.setPath(findPath(group), d);
-
-        groups.push_back(group);
-    }
-
-    vector<model::MoveAction> update()
-    {
-        vector<model::MoveAction> moves;
-
-        for (FlyingGroup &group : groups)
-        {
-            optional<model::MoveAction> move = group.step(d);
-            if (move.has_value())
-                moves.push_back(move.value());
-        }
-
-        return moves;
-    }
+    vector<model::MoveAction> update();
+    void updateAdj(const model::Game& game);
+    void updateSafeAdj(const model::Game& game);
 };
 
 #endif //MYSTRATEGY_CPP_FLYING_CONTROLLER

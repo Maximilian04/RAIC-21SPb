@@ -37,10 +37,8 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	vector<model::BuildingAction> buildActions;
 
 	observer.update(game, planetDists);
-
-	for (int i = 0; i < game.planets.size(); i++)
-		if (observer.bottleneckTraffic[i] > 0)
-			cout << i << " has " << observer.bottleneckTraffic[i] << endl;
+	fc.updateSafeAdj(game);
+	
 
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, homePlanet, enemyHomePlanets, logDists);
@@ -337,17 +335,8 @@ void MyStrategy::init(const model::Game& game) {
 		}
 	}
 
-	vector<vector<int>> adj;
-
-	for (int i = 0; i < game.planets.size(); ++i) {
-		adj.push_back({});
-		for (int j = 0; j < game.planets.size(); ++j) {
-			if ((abs(game.planets[i].x - game.planets[j].x) + abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance))
-				adj[i].push_back(j);
-		}
-	}
-
-	fc.setup(planetDists, adj);
+	fc.setup(planetDists, &observer);
+	fc.updateAdj(game);
 }
 
 void MyStrategy::separatePlanets(const model::Game& game) { // generating list of planets
