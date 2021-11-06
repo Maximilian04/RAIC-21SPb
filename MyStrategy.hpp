@@ -20,7 +20,9 @@ public:
 	model::Action getAction(const model::Game& game);
 
 	int population;
+	set<int> teamPlayers; //ids of teammates
 	int homePlanet;
+	vector<int> teamHomePlanets;
 	vector<int> enemyHomePlanets;
 	vector<Planet> planetInf;
 	vector<vector<int>> planetDists;

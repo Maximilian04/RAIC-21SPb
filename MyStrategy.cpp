@@ -7,7 +7,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	if (homePlanet == -1) 
 	{
 		init(game);
-		prodCycle.init(game, homePlanet, enemyHomePlanets, planetDists);
+		prodCycle.init(game, teamPlayers, teamHomePlanets, enemyHomePlanets, logDists);
 	}
 	separatePlanets(game);
 	++resetTimer;
@@ -37,7 +37,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	vector<model::BuildingAction> buildActions;
 
 	if (!prodCycle.isPlanned) {
-		prodCycle.planBuilding(game, homePlanet, enemyHomePlanets, logDists);
+		prodCycle.planBuilding(game, logDists);
 	} else if (!prodCycle.isBuilt) {
 #if 0 //TODO: отредачить под новый формат buildPlanets
 		int freeStone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
@@ -292,16 +292,41 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 }
 
 void MyStrategy::init(const model::Game& game) {
+	for(int i = 0; i < game.players.size(); i++)
+	{
+		if(game.players[i].teamIndex == 0) 
+		{
+			teamPlayers.insert(i);
+			cout << i;
+		}
+	}
+
 	for (int i = 0; i < game.planets.size(); ++i) {
 		if (!game.planets[i].workerGroups.empty() &&
 			game.planets[i].workerGroups[0].playerIndex == game.myIndex) {
 			homePlanet = i;
 		}
+
 		if (!game.planets[i].workerGroups.empty() &&
-			game.planets[i].workerGroups[0].playerIndex != game.myIndex) {
+			teamPlayers.find(game.planets[i].workerGroups[0].playerIndex)!=teamPlayers.end()) {
+			teamHomePlanets.push_back(i);
+			//cout << i << '\n';
+		}
+
+		if (!game.planets[i].workerGroups.empty() &&
+			teamPlayers.find(game.planets[i].workerGroups[0].playerIndex)==teamPlayers.end()) {
 			enemyHomePlanets.push_back(i);
 		}
 	}
+
+	//cout << game.myIndex << "\n";
+	/*cout << enemyHomePlanets.size() << teamHomePlanets.size();
+
+	for(int i = 0; i < enemyHomePlanets.size(); i++)
+	{
+		cout << teamHomePlanets[i] << " ";
+		cout << enemyHomePlanets[i] << "| ";
+	}*/
 
 	planetDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), 0));
 	logDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), 0));
@@ -348,7 +373,7 @@ void MyStrategy::init(const model::Game& game) {
 			}
 		}
 	}
-	
+
 	vector<vector<int>> adj;
 
 	for (int i = 0; i < game.planets.size(); ++i) {
@@ -360,6 +385,7 @@ void MyStrategy::init(const model::Game& game) {
 	}
 
 	fc.setup(planetDists, adj);
+	cout << "setup is competed!" << '\n';
 	//prodCycle.buildingPlanet = vector<int>(9, -1);
 }
 

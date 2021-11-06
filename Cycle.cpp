@@ -49,14 +49,19 @@ Cycle::Cycle() : buildingPlanet(9), resourceTraffic(9, vector<double>(9)), isBui
 	trafficCoeff[BIOREACTOR].insert(pair<int,double>(ACCUMULATOR_FACTORY, 0.4));
 }
 
-void Cycle::init(const model::Game& game, const int& homePlanet, const vector<int>& enemyHomePlanets,
+bool isTeamPlanet(const model::Game& game, const set<int>& teammates, int id)
+{
+	return (game.planets[id].workerGroups.empty() || teammates.find(game.planets[id].workerGroups[0].playerIndex) != teammates.end());
+}
+
+void Cycle::init(const model::Game& game, const set<int>& teammates, const vector<int>& teamHomePlanets, const vector<int>& enemyHomePlanets,
 					  const vector<vector<int>>& planetDists)
 {
 	planetTypes.resize(5); // 0-2 - RES, 3 - NO RES, 4 - ALL
 	for (int id = 0; id < game.planets.size(); ++id) {
 		//is mine, doesn't have a building, and on 'my' side
-		if ((game.planets[id].workerGroups.empty() || game.planets[id].workerGroups[0].playerIndex == game.myIndex)
-			&& !game.planets[id].building.has_value() && onMySide(planetDists, homePlanet, enemyHomePlanets, id)) {
+		if (isTeamPlanet(game, teammates, id)
+			&& !game.planets[id].building.has_value() && onMySide(planetDists, teamHomePlanets, enemyHomePlanets, id)) {
 			planetTypes[planetType(game, id)].push_back(id);
 			planetTypes[4].push_back(id);
 		}
@@ -179,15 +184,21 @@ double Cycle::logistsRequired(const vector<vector<int>>& planetDists, const vect
 	return ans;
 }
 
-bool Cycle::onMySide(const vector<vector<int>>& planetDists, const int& homePlanet, const vector<int>& enemyHomePlanets,
+bool Cycle::onMySide(const vector<vector<int>>& planetDists, const vector<int>& teamHomePlanets, const vector<int>& enemyHomePlanets,
 					 int id) {
-	int dist = -1;
+	int odist = -1;
 	for (int en: enemyHomePlanets) {
-		if (dist == -1) dist = planetDists[id][en];
-		else dist = min(dist, planetDists[id][en]);
+		if (odist == -1) odist = planetDists[id][en];
+		else odist = min(odist, planetDists[id][en]);
 	}
 
-	return ((double) dist > 0.9 * (double) planetDists[id][homePlanet]);
+	int mdist = -1;
+	for (int te: teamHomePlanets) {
+		if (mdist == -1) mdist = planetDists[id][te];
+		else mdist = min(mdist, planetDists[id][te]);
+	}
+
+	return ((double) odist > 0.9 * (double)mdist);
 }
 
 vector<double> getWorkPower(double workpower) //ordinary worker - 1, pro worker - 1.2
@@ -201,7 +212,7 @@ vector<double> getWorkPower(double workpower) //ordinary worker - 1, pro worker 
 	return wpperbuilding;
 }
 
-vector<double> Cycle::getMaxWorkPower(const model::Game& game)
+vector<double> Cycle::getMaxWorkPower(const model::Game& game) //unused functinon btw
 {
 	vector<double> maxwp = getWorkPower(1200); //1200 = 1000 workers * 120%
 	double coeff = -1;
@@ -361,8 +372,7 @@ vector<vector<int>> Cycle::positionBuilding(const model::Game& game, const vecto
 	return bestbuilding;
 }
 
-void Cycle::planBuilding(const model::Game& game, const int& homePlanet, const vector<int>& enemyHomePlanets,
-						 const vector<vector<int>>& planetDists)
+void Cycle::planBuilding(const model::Game& game, const vector<vector<int>>& planetDists)
 {
 	cout << "Calculating optimal base plan....\n";
 	double left = 0 , right = 500; //we don't want our base to use more than 400 of wp (too much logists)
