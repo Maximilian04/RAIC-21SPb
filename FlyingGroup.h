@@ -19,8 +19,7 @@ using namespace std;
 #define AVOIDANCE_WITH_ATTACK 2
 
 
-class FlyingGroup
-{
+class FlyingGroup {
 public:
     int timeToNext;
     int timeFromPrev;

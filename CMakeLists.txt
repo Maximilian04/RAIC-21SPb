@@ -62,7 +62,7 @@ set (SRC
         Cycle.cpp
         FlyingController.cpp
         FlyingGroup.cpp
-)
+        Observer.cpp)
 SET_SOURCE_FILES_PROPERTIES(${HEADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
 include_directories(".")
 add_executable(spb_ai_champ ${HEADERS} ${SRC})
