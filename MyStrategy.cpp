@@ -202,8 +202,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	}
 
 	if (prodCycle.isBuilt) {
-#if 0 //TODO: отредачить под новый формат buildPlanets
-		if (resetTimer > 100) {
+		/*if (resetTimer > 100) {
 			for (int building = 3; building < prodCycle.stackedPlanet.size(); ++building) {
 				if (prodCycle.stackedPlanet[building]) {
 					if (game.planets[prodCycle.buildingPlanet[building]].workerGroups.empty() ||
@@ -214,154 +213,29 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 					int freeRobots = game.planets[fr].workerGroups[0].number - fc.onFlightAt(fr);
 
 					fc.send(fr, prodCycle.buildingPlanet[CAREER],
-											  freeRobots / 3,
-											  optional<model::Resource>());
+							freeRobots / 3,
+							optional<model::Resource>());
 
 					fc.send(fr, prodCycle.buildingPlanet[FARM],
-											  freeRobots / 3,
-											  optional<model::Resource>());
+							freeRobots / 3,
+							optional<model::Resource>());
 
 					fc.send(fr, prodCycle.buildingPlanet[MINES],
-											  freeRobots -
-											  2 * freeRobots / 3,
-											  optional<model::Resource>());
+							freeRobots -
+							2 * freeRobots / 3,
+							optional<model::Resource>());
 				}
 			}
 
 			resetTimer = 0;
 			prodCycle.stackedPlanet = vector<bool>(prodCycle.stackedPlanet.size(), true);
-		}
+		}*/
 		for (int id = 0; id < game.planets.size(); ++id) {
 			if (!game.planets[id].workerGroups.empty() &&
 				game.planets[id].workerGroups[0].playerIndex == game.myIndex) {
-
-				if (id == prodCycle.buildingPlanet[MINES]) {
-					if (prodCycle.sendRobots(game, fc, id, ORE, 32,
-											 {
-													 {prodCycle.buildingPlanet[FOUNDRY],      1.0 / 2},
-													 {prodCycle.buildingPlanet[EXTRAFOUNDRY], 1.0 / 2}},
-											 {},
-											 12 * 3)) {
-
-						prodCycle.stackedPlanet[MINES] = false;
-					}
-
-				} else if (id == prodCycle.buildingPlanet[CAREER]) {
-					if (prodCycle.sendRobots(game, fc, id, SAND, 16,
-											 {
-													 {prodCycle.buildingPlanet[FURNACE], 1.0 / 1}},
-											 {},
-											 12 * 3)) {
-
-						prodCycle.stackedPlanet[CAREER] = false;
-					}
-
-				} else if (id == prodCycle.buildingPlanet[FARM]) {
-					if (prodCycle.sendRobots(game, fc, id, ORGANICS, 8,
-											 {
-													 {prodCycle.buildingPlanet[BIOREACTOR], 1.0 / 1}},
-											 {},
-											 6 * 3)) {
-
-						prodCycle.stackedPlanet[FARM] = false;
-					}
-
-				} else if (id == prodCycle.buildingPlanet[FOUNDRY]) {
-					if (prodCycle.sendRobots(game, fc, id, METAL, 16 / 2,
-											 {
-													 {prodCycle.buildingPlanet[CHIP_FACTORY],        1.0 / 4},
-													 {prodCycle.buildingPlanet[ACCUMULATOR_FACTORY], 1.0 / 8},
-													 {prodCycle.buildingPlanet[REPLICATOR],          1.0 / 8}},
-											 {
-													 {prodCycle.buildingPlanet[MINES], 1.0 / 2}},
-											 16 * 3)) {
-
-						prodCycle.stackedPlanet[FOUNDRY] = false;
-					}
-
-				} else if (id == prodCycle.buildingPlanet[EXTRAFOUNDRY]) {
-					if (prodCycle.sendRobots(game, fc, id, METAL, 16 / 2,
-											 {
-													 {prodCycle.buildingPlanet[CHIP_FACTORY],        1.0 / 4},
-													 {prodCycle.buildingPlanet[ACCUMULATOR_FACTORY], 1.0 / 8},
-													 {prodCycle.buildingPlanet[REPLICATOR],          1.0 / 8}},
-											 {
-													 {prodCycle.buildingPlanet[MINES], 1.0 / 2}},
-											 16 * 3)) {
-
-						prodCycle.stackedPlanet[EXTRAFOUNDRY] = false;
-					}
-
-				} else if (id == prodCycle.buildingPlanet[FURNACE]) {
-					if (prodCycle.sendRobots(game, fc, id, SILICON, 8,
-											 {
-													 {prodCycle.buildingPlanet[CHIP_FACTORY], 1.0 / 2}},
-											 {
-													 {prodCycle.buildingPlanet[CAREER], 1.0 / 2}},
-											 12 * 3)) {
-
-						prodCycle.stackedPlanet[FURNACE] = false;
-					}
-
-				} else if (id == prodCycle.buildingPlanet[BIOREACTOR]) {
-					if (prodCycle.sendRobots(game, fc, id, PLASTIC, 4,
-											 {
-													 {prodCycle.buildingPlanet[ACCUMULATOR_FACTORY], 1.0 / 2}},
-											 {
-													 {prodCycle.buildingPlanet[FARM], 1.0 / 2}},
-											 12 * 3)) {
-
-						prodCycle.stackedPlanet[BIOREACTOR] = false;
-					}
-
-				} else if (id == prodCycle.buildingPlanet[CHIP_FACTORY]) {
-					if (prodCycle.sendRobots(game, fc, id, CHIP, 4,
-											 {
-													 {prodCycle.buildingPlanet[REPLICATOR], 1.0 / 3}},
-											 {
-													 {prodCycle.buildingPlanet[MINES],  1.0 / 3},
-													 {prodCycle.buildingPlanet[CAREER], 1.0 / 3}},
-											 12 * 3)) {
-
-						prodCycle.stackedPlanet[CHIP_FACTORY] = false;
-					}
-
-				} else if (id == prodCycle.buildingPlanet[ACCUMULATOR_FACTORY]) {
-					if (prodCycle.sendRobots(game, fc, id, ACCUMULATOR, 2,
-											 {
-													 {prodCycle.buildingPlanet[REPLICATOR], 1.0 / 3}},
-											 {
-													 {prodCycle.buildingPlanet[MINES], 1.0 / 3},
-													 {prodCycle.buildingPlanet[FARM],  1.0 / 3}},
-											 12 * 3)) {
-
-						prodCycle.stackedPlanet[ACCUMULATOR_FACTORY] = false;
-					}
-
-				} else if (id == prodCycle.buildingPlanet[REPLICATOR]) {
-					if (prodCycle.sendRobots(game, fc, id, -1, 5,
-											 {},
-											 {
-													 {prodCycle.buildingPlanet[FARM],   1.0 / 7},
-													 {prodCycle.buildingPlanet[CAREER], 1.0 * 2 / 7},
-													 {prodCycle.buildingPlanet[MINES],  1.0 * 4 / 7}},
-											 14 * 3)) {
-
-						prodCycle.stackedPlanet[REPLICATOR] = false;
-					}
-
-				} else {
-					prodCycle.sendRobots(game, fc, id, -1, 0,
-										 {},
-										 {
-												 {prodCycle.buildingPlanet[FARM],   1.0 / 7},
-												 {prodCycle.buildingPlanet[CAREER], 1.0 * 2 / 7},
-												 {prodCycle.buildingPlanet[MINES],  1.0 * 4 / 7}},
-										 0, true);
-				}
+				prodCycle.sendRobots()
 			}
 		}
-#endif
 	}
 
 	if (game.currentTick == 999) {
