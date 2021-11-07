@@ -11,9 +11,9 @@ void Observer::update(const model::Game& game, vector<vector<int>>& d)
     {
         traffic.assign(game.planets.size(), 0);
         bottleneckTraffic.assign(game.planets.size(), 0);
+        bottleneckTrafficPeak.assign(game.planets.size(), 0);
 
         bottleneckTrafficTimed.assign(game.planets.size(), vector<int>(OBSERVER_PERIOD, 0));
-        
     }
 
     // Count enemies on every planet
@@ -45,12 +45,20 @@ void Observer::update(const model::Game& game, vector<vector<int>>& d)
         bottleneckTrafficTimed[i].erase(bottleneckTrafficTimed[i].begin());
         bottleneckTrafficTimed[i].push_back(bottleneckTemp[i]);
 
+        // Calculate real bottleneck traffic value
         double avg = 0;
         for (int& value : bottleneckTrafficTimed[i])
             avg += value;
         avg /= bottleneckTrafficTimed[i].size();
 
         bottleneckTraffic[i] = avg;
+
+        // Calculate peak bottleneck traffic value
+        int max = -1;
+        for (int& value : bottleneckTrafficTimed[i])
+            max = max(value, max);
+        
+        bottleneckTrafficPeak[i] = max;
     }
 }
 

@@ -17,6 +17,8 @@ class Observer
 public:
     vector<double> traffic;
     vector<double> bottleneckTraffic;
+    vector<int> bottleneckTrafficPeak;
+    
     vector<vector<int>> bottleneckTrafficTimed;
 
     vector<int> enemies;
