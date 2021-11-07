@@ -357,49 +357,39 @@ void MyStrategy::init(const model::Game& game) {
 		cout << enemyHomePlanets[i] << "| ";
 	}*/
 
-	planetDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), 0));
-	logDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), 0));
-	
+	const int INF = 1000000;
+	planetDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), INF));
+	logDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), INF));
+
 	for (int i = 0; i < game.planets.size(); ++i) {
 		for (int j = 0; j < game.planets.size(); ++j) {
-			if (i == j) continue;
-			if ((abs(game.planets[i].x - game.planets[j].x) +
-					abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance)) {
-				planetDists[i][j] = planetDists[j][i] = abs(game.planets[i].x - game.planets[j].x) +
-														abs(game.planets[i].y - game.planets[j].y);
+			if (i == j)
+				continue;
+			
+			int d = abs(game.planets[i].x - game.planets[j].x) +
+					abs(game.planets[i].y - game.planets[j].y);
+			
+			if (d <= game.maxTravelDistance)
+				planetDists[i][j] = d;
+			
+			if (d <= game.maxTravelDistance + game.logisticsUpgrade)
+				logDists[i][j] = d;
+		}
+	}
 
-				for (int m = 0; m < game.planets.size(); ++m) {
-					if (m == i || m == j) continue;
-					if (planetDists[m][i] != 0 &&
-						(planetDists[m][j] == 0 || planetDists[m][j] > (planetDists[m][i] + planetDists[i][j]))) {
-						planetDists[m][j] = planetDists[j][m] = planetDists[m][i] + planetDists[i][j];
-					}
-					if (planetDists[m][j] != 0 &&
-						(planetDists[m][i] == 0 || planetDists[m][i] > (planetDists[m][j] + planetDists[i][j]))) {
-						planetDists[m][i] = planetDists[i][m] = planetDists[m][j] + planetDists[i][j];
-					}
-				}
-			}
+	for (int i = 0; i < game.planets.size(); ++i) {
+		for (int j = 0; j < i; ++j) {
+			for (int k = 0; k < game.planets.size(); ++k)
+			{
+				planetDists[i][j] = min(planetDists[i][j], planetDists[i][k] + planetDists[k][j]);
+				planetDists[j][i] = planetDists[i][j];
 
-			if ((abs(game.planets[i].x - game.planets[j].x) +
-					abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance + game.logisticsUpgrade)) {
-				logDists[i][j] = logDists[j][i] = abs(game.planets[i].x - game.planets[j].x) +
-													abs(game.planets[i].y - game.planets[j].y);
-
-				for (int m = 0; m < game.planets.size(); ++m) {
-					if (m == i || m == j) continue;
-					if (logDists[m][i] != 0 &&
-						(logDists[m][j] == 0 || logDists[m][j] > (logDists[m][i] + logDists[i][j]))) {
-						logDists[m][j] = logDists[j][m] = logDists[m][i] + logDists[i][j];
-					}
-					if (logDists[m][j] != 0 &&
-						(logDists[m][i] == 0 || logDists[m][i] > (logDists[m][j] + logDists[i][j]))) {
-						logDists[m][i] = logDists[i][m] = logDists[m][j] + logDists[i][j];
-					}
-				}
+				logDists[i][j] = min(logDists[i][j], logDists[i][k] + logDists[k][j]);
+				logDists[j][i] = logDists[i][j];
 			}
 		}
 	}
+
 
 	fc.setup(planetDists, &observer);
 	fc.updateAdj(game);
