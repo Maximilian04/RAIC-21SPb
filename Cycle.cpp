@@ -17,7 +17,7 @@ int planetType(const model::Game& game, int id) {
 
 Cycle::Cycle() : buildingPlanet(9), resourceTraffic(9, vector<double>(9)), isBuilt(false),
 				 orderedPlanet(CYCLE_BUILD_NUM, false), isPlanned(false),
-				 /*stackedPlanet(CYCLE_BUILD_NUM, false), prodFactor(1),*/
+		/*stackedPlanet(CYCLE_BUILD_NUM, false), prodFactor(1),*/
 				 trafficCoeff() {
 
 	trafficCoeff[MINES].insert(pair<int, double>(FOUNDRY, 3.2));
@@ -95,77 +95,78 @@ void Cycle::init(const model::Game& game, const set<int>& teammates, const vecto
 	}
 }
 
-bool Cycle::sendRobots(const model::Game& game, FlyingController& fc, Observer& observer, int planet) {
-	int planetType = REPLICATOR;
-	for (int i = 0; i < buildingPlanet.size(); ++i) {
-		for (int pl: buildingPlanet[i]) {
-			if (pl == planet) {
-				planetType = i;
-			}
-		}
+bool Cycle::sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
+					   vector<pair<int, float>> plKRes, vector<pair<int, float>> plKEmpty,
+					   int batchSize, bool protectStuck, FlyingController& fc, Observer& observer) {
+	float sumKRes = 0, sumKEmpty = 0;
+	for (pair<int, float> plK: plKRes) {
+		sumKRes += plK.second;
+	}
+	for (pair<int, float> plK: plKEmpty) {
+		sumKEmpty += plK.second;
 	}
 
-	double sumKRes = 0, sumKEmpty = 0;
-	for (int targetPl = planetType + 1; targetPl < resourceTraffic[planetType].size(); ++targetPl) {
-		sumKRes += resourceTraffic[planetType][targetPl];
-	}
-	for (int targetPl = 0; targetPl < planetType; ++targetPl) {
-		sumKEmpty += resourceTraffic[planetType][targetPl];
-	}
-
-	int freeRobots = observer.ours[planet] - fc.onFlightAt(planet);
-	// Cannot be negative, so
-	freeRobots = max(0, freeRobots);
-
-	int resource = planetType == REPLICATOR ? -1 : planetType;
+	int freeRobots = max(0, (int) (observer.ours[planet] - fc.onFlightAt(planet)));
 	int freeReses = 0;
 	if (resource != -1) {
 		freeReses = game.planets[planet].resources.count(t2r(resource)) ?
 					game.planets[planet].resources.at(t2r(resource)) : 0;
+		//if (resource == METAL)
+		//	freeRobots = min(freeRobots, (int) ((sumKRes + sumKEmpty) / sumKRes * freeReses));
 	}
-
 	int leftRobots = freeRobots;
 	int leftReses = freeReses;
 
-	static vector<vector<double>> shortageRobots(game.planets.size(), vector<double>(game.planets.size(), 0));
+	static vector<vector<float>> shortageRobots(game.planets.size(), vector<float>(game.planets.size(), 0));
+	/*for (pair<int, float> plK: plKRes) {
+		if (shortageRobots[planet][plK.first] >= 1 && leftRobots > 0 && leftReses > 0) {
+			int batch = min(min(leftRobots, (int) shortageRobots[planet][plK.first]), leftReses);
+			moveActions.push_back(model::MoveAction(planet, plK.first, batch,
+													optional<model::Resource>(t2r(resource))));
+			leftRobots -= batch;
+			leftReses -= batch;
+			shortageRobots[planet][plK.first] -= batch;
+		}
+	}
+	for (pair<int, float> plK: plKEmpty) {
+		if (shortageRobots[planet][plK.first] >= 1 && leftRobots > 0) {
+			int batch = min(leftRobots, (int) shortageRobots[planet][plK.first]);
+			if (batch < 0) cout << "ATAS2 " << planet << " > " << plK.first << endl;
+			moveActions.push_back(model::MoveAction(planet, plK.first, batch,
+													optional<model::Resource>()));
+			leftRobots -= batch;
+			shortageRobots[planet][plK.first] -= batch;
+		}
+	}*/
 
 	freeRobots = leftRobots; // чтобы рассчитывать пропорции из оставшихся
 	freeReses = leftReses; // чтобы рассчитывать пропорции из оставшихся
 	int totalFreeRobots = leftRobots;
 
-	int lastAction = -1;
-	//if (freeRobots < batchSize && !protectStuck) return false;
-	for (int targetPl = planetType + 1; targetPl < resourceTraffic[planetType].size(); ++targetPl) {
-		int batch = (int) (resourceTraffic[planetType][targetPl] * min(freeReses, freeRobots)
-						   / sumKRes / buildingPlanet[planetType].size());
-
-		for (int targetID: buildingPlanet[targetPl]) {
-			fc.send(planet, targetID, batch, optional<model::Resource>(t2r(resource)));
-
-			leftRobots -= batch;
-			leftReses -= batch;
-//			shortageRobots[planet][targetID] += plK.second * totalFreeRobots - batch;
-		}
+	if (freeRobots < batchSize && !protectStuck) return false;
+	for (pair<int, float> plK: plKRes) {
+		int batch = (int) (plK.second / sumKRes * min(freeReses, freeRobots));
+		moveActions.push_back(model::MoveAction(planet, plK.first, batch,
+												optional<model::Resource>(t2r(resource))));
+		leftRobots -= batch;
+		leftReses -= batch;
+		shortageRobots[planet][plK.first] += plK.second * totalFreeRobots - batch;
 	}
 
 	freeRobots = leftRobots; // чтобы рассчитывать пропорции из оставшихся
 
-	for (int targetPl = 0; targetPl < planetType; ++targetPl) {
-		int batch = (int) (resourceTraffic[planetType][targetPl] / sumKEmpty * freeRobots);
-
-		for (int targetID: buildingPlanet[targetPl]) {
-			fc.send(planet, targetID, batch, optional<model::Resource>());
-			lastAction = targetID;
-
-			leftRobots -= batch;
-			leftReses -= batch;
-//			shortageRobots[planet][targetID] += plK.second * totalFreeRobots - batch;
-		}
+	for (pair<int, float> plK: plKEmpty) {
+		int batch = (int) (plK.second / sumKEmpty * freeRobots);
+		if (batch < 0) cout << "ATAS1 " << planet << " > " << plK.first << endl;
+		moveActions.push_back(model::MoveAction(planet, plK.first, batch,
+												optional<model::Resource>()));
+		leftRobots -= batch;
+		shortageRobots[planet][plK.first] += plK.second * totalFreeRobots - batch;
 	}
-	if (leftRobots > 0 && lastAction != -1) {
-		fc.send(planet, lastAction, leftRobots, optional<model::Resource>());
-		//moveActions.rbegin()->workerNumber += leftRobots;
-		//#shortageRobots[planet][moveActions.rbegin()->targetPlanet] += leftRobots;
+	if (leftRobots > 0) {
+		//lastAct.workerNumber = leftRobots;
+		moveActions.rbegin()->workerNumber += leftRobots;
+		shortageRobots[planet][moveActions.rbegin()->targetPlanet] += leftRobots;
 	}
 	return true;
 }

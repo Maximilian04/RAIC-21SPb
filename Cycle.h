@@ -42,8 +42,9 @@ public:
 
 	vector<vector<int>> planetTypes; // 0-2 - RES, 3 - NO RES, 4 - ALL
 	vector<vector<int>> buildGraph; //graph where objects are planets connected with their 'neighbour' planets with the same type
-
-	bool sendRobots(const model::Game& game, FlyingController& fc, Observer& observer, int planet);
+	bool sendRobots(const model::Game& game, vector<model::MoveAction>& moveActions, int planet, int resource,
+						   vector<pair<int, float>> plKRes, vector<pair<int, float>> plKEmpty,
+						   int batchSize, bool protectStuck, FlyingController& fc, Observer& observer);
 
 	vector<vector<int>> positionBuilding(const model::Game& game, const vector<vector<int>>& planetDists,
 										 vector<double> buildPower, int attempts, int opts);
