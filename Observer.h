@@ -38,18 +38,9 @@ public:
 
     int size();
 
-    int isAlly(int playerIndex)
-    {
-        for (int index : alliesList)
-            if (index == playerIndex)
-                return true;
-        return false;
-    }
+    int isAlly(int playerIndex);
 
-    int isEnemy(int playerIndex)
-    {
-        return !isAlly(playerIndex);
-    }
+    int isEnemy(int playerIndex);
 };
 
 #endif //MYSTRATEGY_CPP_OBSERVER

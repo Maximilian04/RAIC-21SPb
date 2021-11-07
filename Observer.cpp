@@ -92,3 +92,17 @@ bool Observer::isOurs(int planet)
 int Observer::size()
 {
     return enemies.size();
+}
+
+int Observer::isEnemy(int playerIndex)
+{
+    return !isAlly(playerIndex);
+}
+
+int Observer::isAlly(int playerIndex)
+{
+    for (int index : alliesList)
+        if (index == playerIndex)
+            return true;
+    return false;
+}

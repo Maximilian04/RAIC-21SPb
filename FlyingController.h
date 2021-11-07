@@ -43,7 +43,7 @@ public:
 
     int onFlightAt(int planet);
 
-    void send(int fr, int to, int num, optional<model::Resource> res, int safetyMode=IGNORANCE);
+    void send(int fr, int to, int num, optional<model::Resource> res, int safetyMode=AVOIDANCE);
 
     vector<model::MoveAction> update();
     void updateAdj(const model::Game& game);
