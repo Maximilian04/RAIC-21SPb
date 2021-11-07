@@ -36,7 +36,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, logDists);
 		//role initialization
-		vector<pair<int, int>> baseDists; //bAsed LMAO||| first - distance, second - home planet id
+		vector<pair<int, int>> baseDists; //first - distance, second - home planet id
 		for (int id: teamHomePlanets) {
 			int maxdist = 0;
 			for (int i = 0; i < prodCycle.buildingPlanet.size(); i++) {
@@ -84,10 +84,21 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			} else prodCycle.isBuilt = false;
 		}
 
+		vector<double> needWorkers(game.planets.size(), 0); //workers needed on a planet;
+		vector<double> upcomingWorkers(game.planets.size(), 0); //upcoming workers
+		for(auto fg: fc.groups)
+		{	
+			upcomingWorkers[fg.to] += fg.num;
+		}
+		for(int i = 0; i < game.planets.size(); i++)
+		{
+			upcomingWorkers[i] += observer.ours[i]; //- observer.enemies[i];
+		}
+
 		if (!prodCycle.isBuilt && role == WORKER) //ща будем базу строить
 		{
 			static vector<bool> inProcess(buildingOrder.size(),
-										  false); //true if there is number of workers already in a flight to build the ith building
+										  false); //true if there is number of workers currently flying to build the ith building
 			int freestone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
 								game.planets[homePlanet].resources.at(t2r(STONE)) : 0,
 								!game.planets[homePlanet].workerGroups.empty() ?
@@ -98,9 +109,9 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 					inProcess[i] = false;
 					if (game.planets[buildingOrder[i].first].workerGroups.size() > 0
 						&& game.planets[buildingOrder[i].first].workerGroups[0].playerIndex == game.myIndex) {
-						fc.send(buildingOrder[i].first, homePlanet,
+						/*fc.send(buildingOrder[i].first, homePlanet,
 								game.planets[buildingOrder[i].first].workerGroups[0].number, {},
-								true); //if there are workers on a planet with a building then order them back
+								true); //if there are workers on a planet with a building then order them back*/
 					}
 				} else if (!inProcess[i]) {
 					int price = game.buildingProperties.at(t2b(buildingOrder[i].second)).buildResources.at(
@@ -113,8 +124,49 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 						buildActions.push_back(
 								model::BuildingAction(buildingOrder[i].first, t2b(buildingOrder[i].second)));
 					}
+					else{
+						needWorkers[homePlanet] += price-freestone; //if there is not enough stone then we need some workers back to the homePlanet
+						freestone = 0;
+					}
 				} else {
 					buildActions.push_back(model::BuildingAction(buildingOrder[i].first, t2b(buildingOrder[i].second)));
+				}
+			}
+		}
+
+		if(role == WORKER)
+		{
+			for(int i = 0; i < prodCycle.buildingPlanet.size(); i++) //ordering workers to go to the buildings
+			{
+				for(int j = 0; j < prodCycle.buildingPlanet[i].size(); j++)
+				{
+					//needWorkers[prodCycle.buildingPlanet[i][j]] = prodCycle.buildingWorkpower[i]/prodCycle.buildingPlanet[i].size()/1.2;
+				}
+			}
+			for(int i = 0; i < game.planets.size(); i++)
+			{
+				needWorkers[i] -= upcomingWorkers[i];
+			}
+			cout << upcomingWorkers[0] << " " << needWorkers[0] << "\n";
+
+			for(int i = 0; i < needWorkers.size(); i++)
+			{
+				if(needWorkers[i] > 0)
+				{
+					for(int id = 0; id < game.planets.size(); id++)
+					{
+						if(needWorkers[i] <= 0) break;
+						if(needWorkers[id] < 0)
+						{
+							int cantake = min((int)ceil(min(-needWorkers[id], needWorkers[i])), observer.ours[id]);
+							if(cantake != 0)
+							{
+								fc.send(id,i,cantake, {}, true);
+								needWorkers[i] -= cantake;
+								needWorkers[id] += cantake;
+							}
+						}
+					}
 				}
 			}
 		}

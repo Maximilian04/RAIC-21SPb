@@ -193,7 +193,7 @@ bool Cycle::onMySide(const vector<vector<int>>& planetDists, const vector<int>& 
 		else mdist = min(mdist, planetDists[id][te]);
 	}
 
-	return ((double) odist > 0.9 * (double) mdist);
+	return ((double) odist > 0.85 * (double) mdist);
 }
 
 vector<double> getWorkPower(double workpower) { //ordinary worker - 1, pro worker - 1.2
