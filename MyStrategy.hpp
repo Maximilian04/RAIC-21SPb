@@ -6,6 +6,7 @@
 
 #include "Observer.h"
 #include "FlyingController.h"
+#include "WarController.h"
 #include "Cycle.h"
 #include "Planet.h"
 #include "Terms.h"
@@ -44,6 +45,7 @@ public:
 
 	FlyingController fc;
 	Observer observer;
+	WarController warController;
 };
 
 #endif

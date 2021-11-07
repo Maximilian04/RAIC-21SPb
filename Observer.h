@@ -17,18 +17,39 @@ class Observer
 public:
     vector<double> traffic;
     vector<double> bottleneckTraffic;
+    vector<int> bottleneckTrafficPeak;
+
     vector<vector<int>> bottleneckTrafficTimed;
 
+    // Workers nums per planet in format prop[planet] = number of workers of cetrain type at planet
     vector<int> enemies;
+    vector<int> allies;
+    vector<int> ours;
+  
+    vector<int> alliesList;
 
-    Observer();
+    vector<int> enemyFlyersTo;
+
+    void setup(const model::Game& game);
 
     void update(const model::Game& game, vector<vector<int>>& d);
 
-    // TODO: use flying groups to predict enemies number on planet (btw doesn`t really matter)
     bool isOurs(int planet);
 
     int size();
+
+    int isAlly(int playerIndex)
+    {
+        for (int index : alliesList)
+            if (index == playerIndex)
+                return true;
+        return false;
+    }
+
+    int isEnemy(int playerIndex)
+    {
+        return !isAlly(playerIndex);
+    }
 };
 
 #endif //MYSTRATEGY_CPP_OBSERVER

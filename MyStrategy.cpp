@@ -33,7 +33,6 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	observer.update(game, planetDists);
 	fc.updateSafeAdj(game);
 
-
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, logDists);
 		//role initialization
@@ -436,6 +435,8 @@ void MyStrategy::init(const model::Game& game) {
 
 	fc.setup(planetDists, &observer);
 	fc.updateAdj(game);
+
+	observer.setup(game);
 
 }
 
