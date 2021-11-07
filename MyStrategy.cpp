@@ -95,7 +95,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	
 		for(int i = 0; i < game.planets.size(); i++)
 		{
-			upcomingWorkers[i] = observer.ours[i] + fc.onFlightTo(i); //- observer.enemies[i];
+			upcomingWorkers[i] = max(observer.ours[i] + fc.onFlightTo(i),0); 
 			if(game.planets[i].resources.count(model::Resource::STONE))
 			{
 				stoneUpcoming[i] = game.planets[i].resources.at(t2r(STONE));
@@ -107,14 +107,6 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			if (!fg.isFinished && fg.path.size() != 1 && fg.res.has_value() && fg.res.value() == model::Resource::STONE)
 			{
 				stoneUpcoming[fg.to] += fg.num; //stone coming to the planet
-			}
-		}
-
-		for(int i = 0; i < prodCycle.buildingPlanet.size(); i++)
-		{
-			for(int j = 0; j < prodCycle.buildingPlanet[i].size(); j++)
-			{
-				cout << prodCycle.buildingPlanet[i][j] << ": " << stoneUpcoming[prodCycle.buildingPlanet[i][j]] << "\n";
 			}
 		}
 
@@ -138,7 +130,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 				} else if (stoneUpcoming[buildingOrder[i].first] < price) {
 					if (freestone >= price) //if we can build it
 					{
-						fc.send(homePlanet, buildingOrder[i].first, price, model::Resource::STONE, AVOIDANCE);
+						fc.send(homePlanet, buildingOrder[i].first, price, model::Resource::STONE, IGNORANCE);
 						freestone -= price;
 						buildActions.push_back(
 								model::BuildingAction(buildingOrder[i].first, t2b(buildingOrder[i].second)));
@@ -170,11 +162,22 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			}
 			//cout << upcomingWorkers[0] << " " << needWorkers[0] << "\n";
 
+
 			for(int i = 0; i < game.planets.size(); i++)
 			{
+				if(needWorkers[i] > 0)
+				{
+					needWorkers[i] += fc.onFlightAt(i);
+				}
 				needWorkers[i] -= upcomingWorkers[i];
 			}
- 
+ /*
+			for(int i = 0; i < buildingOrder.size(); i++)
+			{
+				if(isBuilt[i]) continue;
+				cout << buildingOrder[i].first << ": " << stoneUpcoming[buildingOrder[i].first] << " "<<needWorkers[buildingOrder[i].first] << "| ";
+			}
+			cout << "\n";*/
 			for(int i = 0; i < needWorkers.size(); i++)
 			{
 				if(needWorkers[i] > 0)
@@ -187,7 +190,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 							int cantake = min((int)ceil(min(-needWorkers[id], needWorkers[i])), observer.ours[id]);
 							if(cantake != 0)
 							{
-								fc.send(id,i,cantake, {}, AVOIDANCE);
+								fc.send(id,i,cantake, {}, IGNORANCE);
 								needWorkers[i] -= cantake;
 								needWorkers[id] += cantake;
 							}
