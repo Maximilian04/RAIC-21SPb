@@ -35,7 +35,32 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, logDists);
-	} else if (!prodCycle.isBuilt) {
+		//role initialization
+		vector<pair<int, int>> baseDists; //bAsed LMAO||| first - distance, second - home planet id
+		for (int id: teamHomePlanets) {
+			int maxdist = 0;
+			for (int i = 0; i < prodCycle.buildingPlanet.size(); i++) {
+				for (int j = 0; j < prodCycle.buildingPlanet[i].size(); j++) {
+					maxdist = max(maxdist, planetDists[id][prodCycle.buildingPlanet[i][j]]);
+				}
+			}
+			baseDists.push_back(pair<int, int>(maxdist, id));
+		}
+
+		sort(baseDists.begin(), baseDists.end(), [](pair<int, int> a, pair<int, int> b) {
+			if (a.first == b.first) return a.second < b.second;
+			else return a.first < b.first;
+		});
+
+		for (int i = 0; i < baseDists.size(); i++) {
+			if (baseDists[i].second == homePlanet) {
+				role = i;
+				break;
+			}
+		}
+		cout << "\nrole:" << role;
+
+	} else {
 #if 0 //TODO: отредачить под новый формат buildPlanets
 		int freeStone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
 							game.planets[homePlanet].resources.at(t2r(STONE)) : 0,
@@ -66,8 +91,66 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			cout << "работаем" << endl;
 		}
 #endif
-	} else {
+		static vector<pair<int, int>> buildingOrder; //planet id and building type
+		if (buildingOrder.size() == 0) //if buildingOrder is not initialized
+		{
+			for (int i = 0; i < prodCycle.buildingPlanet.size(); i++) {
+				for (int j = 0; j < prodCycle.buildingPlanet[i].size(); j++) {
+					buildingOrder.push_back(
+							pair<int, int>(prodCycle.buildingPlanet[i][j], i)); //planet id and building type
+				}
+			}
+			sort(buildingOrder.begin(), buildingOrder.end(), [&](pair<int, int> b1, pair<int, int> b2) {
+				return planetDists[homePlanet][b1.first] > planetDists[homePlanet][b2.first];
+			});
+		}
 
+		prodCycle.isBuilt = true;
+		vector<bool> isBuilt(buildingOrder.size(), false); //true if ith building is built
+		for (int i = 0; i < buildingOrder.size(); i++) {
+			if (game.planets[buildingOrder[i].first].building.has_value()
+				&& b2t(game.planets[buildingOrder[i].first].building.value().buildingType) == buildingOrder[i].second) {
+				isBuilt[i] = true;
+			} else prodCycle.isBuilt = false;
+		}
+
+		if (!prodCycle.isBuilt && role == WORKER) //ща будем базу строить
+		{
+			static vector<bool> inProcess(buildingOrder.size(),
+										  false); //true if there is number of workers already in a flight to build the ith building
+			int freestone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
+								game.planets[homePlanet].resources.at(t2r(STONE)) : 0,
+								!game.planets[homePlanet].workerGroups.empty() ?
+								game.planets[homePlanet].workerGroups[0].number : 0);
+
+			for (int i = 0; i < buildingOrder.size(); i++) {
+				if (isBuilt[i]) {
+					inProcess[i] = false;
+					if (game.planets[buildingOrder[i].first].workerGroups.size() > 0
+						&& game.planets[buildingOrder[i].first].workerGroups[0].playerIndex == game.myIndex) {
+						fc.send(buildingOrder[i].first, homePlanet,
+								game.planets[buildingOrder[i].first].workerGroups[0].number, {},
+								true); //if there are workers on a planet with a building then order them back
+					}
+				} else if (!inProcess[i]) {
+					int price = game.buildingProperties.at(t2b(buildingOrder[i].second)).buildResources.at(
+							model::Resource::STONE);
+					if (freestone >= price) //if we can build it
+					{
+						fc.send(homePlanet, buildingOrder[i].first, price, model::Resource::STONE, true);
+						freestone -= price;
+						inProcess[i] = true;
+						buildActions.push_back(
+								model::BuildingAction(buildingOrder[i].first, t2b(buildingOrder[i].second)));
+					}
+				} else {
+					buildActions.push_back(model::BuildingAction(buildingOrder[i].first, t2b(buildingOrder[i].second)));
+				}
+			}
+		}
+	}
+
+	if (prodCycle.isBuilt) {
 #if 0 //TODO: отредачить под новый формат buildPlanets
 		if (resetTimer > 100) {
 			for (int building = 3; building < prodCycle.stackedPlanet.size(); ++building) {
@@ -354,6 +437,7 @@ void MyStrategy::init(const model::Game& game) {
 	fc.updateAdj(game);
 
 	observer.setup(game);
+
 }
 
 void MyStrategy::separatePlanets(const model::Game& game) { // generating list of planets
