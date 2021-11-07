@@ -32,12 +32,6 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 	observer.update(game, planetDists);
 	fc.updateSafeAdj(game);
-	
-	fc.send(0, rand() % game.planets.size(), 1, nullopt, AVOIDANCE);
-	cout << "------------" << endl;
-	for (int i = 0; i < observer.size(); i++)
-		if (observer.bottleneckTraffic[i] > 0)
-			cout << i << ":" << observer.bottleneckTraffic[i] << endl;
 
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, logDists);
@@ -358,6 +352,8 @@ void MyStrategy::init(const model::Game& game) {
 
 	fc.setup(planetDists, &observer);
 	fc.updateAdj(game);
+
+	observer.setup(game);
 }
 
 void MyStrategy::separatePlanets(const model::Game& game) { // generating list of planets

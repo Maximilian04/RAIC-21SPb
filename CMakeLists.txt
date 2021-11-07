@@ -35,6 +35,7 @@ set(HEADERS
         FlyingGroup.h
         FlyingController.h
         Observer.h
+        WarController.h
 )
 set (SRC
     "MyStrategy.cpp"
@@ -64,6 +65,7 @@ set (SRC
         FlyingController.cpp
         FlyingGroup.cpp
         Observer.cpp
+        WarController.cpp
 )
 SET_SOURCE_FILES_PROPERTIES(${HEADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
 include_directories(".")
