@@ -55,7 +55,7 @@ void Observer::update(const model::Game& game, vector<vector<int>>& d)
         if (isEnemy(fg.playerIndex))
         {
             enemyFlyersTo[fg.targetPlanet] += fg.number;
-            
+
             if ((d[fg.departurePlanet][fg.targetPlanet] > game.maxTravelDistance || fg.nextPlanet != fg.targetPlanet) && fg.departureTick == game.currentTick - 1)
                 bottleneckTemp[fg.nextPlanet] += fg.number;
         }
