@@ -42,13 +42,10 @@ vector<int> FlyingController::findPathDijkstra(FlyingGroup group) {
 
 	vector<int> path;
 	int v = group.to;
-	cout << "Path: ";
 	while (v != -1) {
 		path.push_back(v);
 		v = prev[v];
-		cout << v << " ";
 	}
-	cout << endl;
 	reverse(path.begin(), path.end());
 
 	return path;
@@ -85,6 +82,15 @@ int FlyingController::onFlightAt(int planet) {
 	int res = 0;
 	for (FlyingGroup group: groups)
 		if (!group.isFinished && group.path.size() != 1 && (group.path[0] == planet && group.timeToNext == 1))
+			res += group.num;
+
+	return res;
+}
+
+int FlyingController::onFlightTo(int planet) {
+	int res = 0;
+	for (FlyingGroup group: groups)
+		if (!group.isFinished && group.path.size() != 1 && group.to == planet)
 			res += group.num;
 
 	return res;
@@ -128,10 +134,18 @@ vector<model::MoveAction> FlyingController::update() {
 		}
 	}
 
+	for (int i = 0; i < groups.size(); i++)
+		while (groups[i].isFinished)
+		{
+			groups.erase(groups.begin() + i);
+			if (i == groups.size())
+				continue;
+		}
+
 	return moves;
 }
 
-void FlyingController::updateAdj(const model::Game& game) {
+void FlyingController::updateAdj(const model::Game& game, int maxTravelDistance) {
 	adj.clear();
 	for (int i = 0; i < game.planets.size(); ++i) {
 		adj.push_back({});
@@ -140,7 +154,7 @@ void FlyingController::updateAdj(const model::Game& game) {
 				continue;
 
 			if ((abs(game.planets[i].x - game.planets[j].x) + abs(game.planets[i].y - game.planets[j].y) <=
-				 game.maxTravelDistance))
+				 maxTravelDistance))
 				adj[i].push_back(j);
 		}
 	}
@@ -148,7 +162,7 @@ void FlyingController::updateAdj(const model::Game& game) {
 	safeAdj = adj;
 }
 
-void FlyingController::updateSafeAdj(const model::Game& game) {
+void FlyingController::updateSafeAdj(const model::Game& game, int maxTravelDistance) {
 	safeAdj.clear();
 	for (int i = 0; i < game.planets.size(); ++i) {
 		safeAdj.push_back({});
@@ -164,7 +178,7 @@ void FlyingController::updateSafeAdj(const model::Game& game) {
 				continue;
 
 			if ((abs(game.planets[i].x - game.planets[j].x) + abs(game.planets[i].y - game.planets[j].y) <=
-				 game.maxTravelDistance))
+				 maxTravelDistance))
 				safeAdj[i].push_back(j);
 		}
 	}

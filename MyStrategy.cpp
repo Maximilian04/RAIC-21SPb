@@ -31,7 +31,12 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	vector<model::BuildingAction> buildActions;
 
 	observer.update(game, planetDists);
-	fc.updateSafeAdj(game);
+	fc.updateSafeAdj(game, game.maxTravelDistance);
+
+	if (role == COMBAT)
+	{
+		//warController.update(game, fc, observer);
+	}
 
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, logDists);
@@ -414,10 +419,7 @@ void MyStrategy::init(const model::Game& game) {
 	logDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), INF));
 
 	for (int i = 0; i < game.planets.size(); ++i) {
-		for (int j = 0; j < game.planets.size(); ++j) {
-			if (i == j)
-				continue;
-			
+		for (int j = 0; j < game.planets.size(); ++j) {			
 			int d = abs(game.planets[i].x - game.planets[j].x) +
 					abs(game.planets[i].y - game.planets[j].y);
 			
@@ -444,7 +446,7 @@ void MyStrategy::init(const model::Game& game) {
 
 
 	fc.setup(planetDists, &observer);
-	fc.updateAdj(game);
+	fc.updateAdj(game, game.maxTravelDistance);
 
 	observer.setup(game);
 
