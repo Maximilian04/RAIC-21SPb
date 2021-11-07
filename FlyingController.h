@@ -19,11 +19,11 @@
 using namespace std;
 
 const int INF = 100000;
-class FlyingController
-{
+
+class FlyingController {
 public:
-    // Distances in format d[i][j] = correct flying distance between planets i and j
-    vector<vector<int>> d;
+	// Distances in format d[i][j] = correct flying distance between planets i and j
+	vector<vector<int>> d;
     // Adjacent planets in format adj[i] = all planets adjacent with planet i
     vector<vector<int>> adj;
     // Adjacent planets without enemies in format adj[i] = all planets adjacent with planet i

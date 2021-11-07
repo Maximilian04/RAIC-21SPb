@@ -35,7 +35,7 @@ public:
 	bool isPlanned;
 
 	//vector<vector<int>> trafficCoeff;
-	map<int, set<pair<int,double>>> trafficCoeff; //traffic graph (diagram) trafficCoeff[i] = {{build1, logistsrequired}, {build2, logistsrequired}}
+	map<int, set<pair<int, double>>> trafficCoeff; //traffic graph (diagram) trafficCoeff[i] = {{build1, logistsrequired}, {build2, logistsrequired}}
 	const static vector<double> workCoeff;//amount of workpower needed to power 1 wp on a replicator
 	const static double baseConsumption; //sum of values above
 
@@ -45,26 +45,28 @@ public:
 	double prodFactor;//не надо
 	int buildEff;//не надо
 
-	bool sendRobots(const model::Game& game, FlyingController &fc, int planet, int resource,
+	bool sendRobots(const model::Game& game, FlyingController& fc, int planet, int resource,
 					int capacity, vector<pair<int, float>> plKRes, vector<pair<int, float>> plKEmpty,
 					int batchSize, bool protectStuck = false);
 
-	vector<vector<int>> positionBuilding(const model::Game& game, const vector<vector<int>>& planetDists, vector<double> buildPower, int attempts, int opts);
+	vector<vector<int>> positionBuilding(const model::Game& game, const vector<vector<int>>& planetDists,
+										 vector<double> buildPower, int attempts, int opts);
 
 	void planBuilding(const model::Game& game, const vector<vector<int>>& planetDists);
 
 	vector<double> getMaxWorkPower(const model::Game& game); //returns max workpower used in buildings
 
-	void init(const model::Game& game, const set<int>& teammates, const vector<int>& teamHomePlanets, const vector<int>& enemyHomePlanets,
-					  const vector<vector<int>>& planetDists);
+	void init(const model::Game& game, const set<int>& teammates, const vector<int>& teamHomePlanets,
+			  const vector<int>& enemyHomePlanets, const vector<vector<int>>& planetDists);
 
 	Cycle();
 
 private:
-	double logistsRequired(const vector<vector<int>>& planetDists, const vector<vector<int>>& candidates, const vector<double>& cons); //returns amount of logists to maintain the base
+	double logistsRequired(const vector<vector<int>>& planetDists, const vector<vector<int>>& candidates,
+						   const vector<double>& cons); //returns amount of logists to maintain the base
 
-	bool onMySide(const vector<vector<int>>& planetDists, const vector<int>& teamHomePlanets, const vector<int>& enemyHomePlanets,
-				  int id);
+	bool onMySide(const vector<vector<int>>& planetDists, const vector<int>& teamHomePlanets,
+				  const vector<int>& enemyHomePlanets, int id);
 };
 
 

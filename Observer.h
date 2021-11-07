@@ -25,7 +25,7 @@ public:
     vector<int> enemies;
     vector<int> allies;
     vector<int> ours;
-
+  
     vector<int> alliesList;
 
     vector<int> enemyFlyersTo;
