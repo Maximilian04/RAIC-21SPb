@@ -61,36 +61,6 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		cout << "\nrole:" << role;
 
 	} else {
-#if 0 //TODO: отредачить под новый формат buildPlanets
-		int freeStone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
-							game.planets[homePlanet].resources.at(t2r(STONE)) : 0,
-							!game.planets[homePlanet].workerGroups.empty() ?
-							game.planets[homePlanet].workerGroups[0].number : 0);
-		bool hasMissedBuild = false;
-		for (int building = 0; building < CYCLE_BUILD_NUM; ++building) {
-			if (game.planets[prodCycle.buildingPlanet[building]].building.has_value()) continue;
-			hasMissedBuild = true;
-			if (prodCycle.orderedPlanet[building]) {
-				buildActions.push_back(model::BuildingAction(prodCycle.buildingPlanet[building],
-															 optional<model::BuildingType>(
-																	 t2b(building == EXTRAFOUNDRY ? FOUNDRY
-																								  : building))));
-			} else {
-				if (freeStone < stoneCost(building == EXTRAFOUNDRY ? FOUNDRY : building)) continue;
-
-				fc.send(homePlanet, prodCycle.buildingPlanet[building],
-														stoneCost(building == EXTRAFOUNDRY ? FOUNDRY : building),
-														optional<model::Resource>(t2r(STONE)));
-				freeStone -= stoneCost(building);
-				prodCycle.orderedPlanet[building] = true;
-			}
-		}
-		if (!hasMissedBuild) {
-			prodCycle.isBuilt = true;
-			prodCycle.prodFactor = 2.5;
-			cout << "работаем" << endl;
-		}
-#endif
 		static vector<pair<int, int>> buildingOrder; //planet id and building type
 		if (buildingOrder.size() == 0) //if buildingOrder is not initialized
 		{
