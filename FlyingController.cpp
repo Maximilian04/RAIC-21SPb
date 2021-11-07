@@ -135,12 +135,14 @@ vector<model::MoveAction> FlyingController::update() {
 	}
 
 	for (int i = 0; i < groups.size(); i++)
+	{
 		while (groups[i].isFinished)
 		{
 			groups.erase(groups.begin() + i);
 			if (i == groups.size())
-				continue;
+				break;
 		}
+	}
 
 	return moves;
 }
