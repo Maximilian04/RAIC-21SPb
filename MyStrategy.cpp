@@ -324,7 +324,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 void MyStrategy::init(const model::Game& game) {
 	for (int i = 0; i < game.players.size(); i++) {
-		if (game.players[i].teamIndex == 0) {
+		if (game.players[i].teamIndex == game.players[game.myIndex].teamIndex) {
 			teamPlayers.insert(i);
 			cout << i;
 		}
