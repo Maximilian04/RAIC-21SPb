@@ -139,7 +139,7 @@ bool Cycle::sendRobots(const model::Game& game, FlyingController& fc, Observer& 
 		int batch = (int) (resourceTraffic[planetType][targetPl] * min(freeReses, freeRobots)
 						   / sumKRes / buildingPlanet[planetType].size());
 
-		for (int targetID: buildingPlanet[planetType]) {
+		for (int targetID: buildingPlanet[targetPl]) {
 			fc.send(planet, targetID, batch, optional<model::Resource>(t2r(resource)));
 
 			leftRobots -= batch;
@@ -153,7 +153,7 @@ bool Cycle::sendRobots(const model::Game& game, FlyingController& fc, Observer& 
 	for (int targetPl = 0; targetPl < planetType; ++targetPl) {
 		int batch = (int) (resourceTraffic[planetType][targetPl] / sumKEmpty * freeRobots);
 
-		for (int targetID: buildingPlanet[planetType]) {
+		for (int targetID: buildingPlanet[targetPl]) {
 			fc.send(planet, targetID, batch, optional<model::Resource>());
 			lastAction = targetID;
 
