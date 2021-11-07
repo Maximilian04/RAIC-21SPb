@@ -33,6 +33,11 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	observer.update(game, planetDists);
 	fc.updateSafeAdj(game, game.maxTravelDistance);
 
+	if (role == COMBAT)
+	{
+		//warController.update(game, fc, observer);
+	}
+
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, logDists);
 		//role initialization

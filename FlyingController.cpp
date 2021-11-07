@@ -42,13 +42,10 @@ vector<int> FlyingController::findPathDijkstra(FlyingGroup group) {
 
 	vector<int> path;
 	int v = group.to;
-	cout << "Path: ";
 	while (v != -1) {
 		path.push_back(v);
 		v = prev[v];
-		cout << v << " ";
 	}
-	cout << endl;
 	reverse(path.begin(), path.end());
 
 	return path;
@@ -85,6 +82,15 @@ int FlyingController::onFlightAt(int planet) {
 	int res = 0;
 	for (FlyingGroup group: groups)
 		if (!group.isFinished && group.path.size() != 1 && (group.path[0] == planet && group.timeToNext == 1))
+			res += group.num;
+
+	return res;
+}
+
+int FlyingController::onFlightTo(int planet) {
+	int res = 0;
+	for (FlyingGroup group: groups)
+		if (!group.isFinished && group.path.size() != 1 && group.to == planet)
 			res += group.num;
 
 	return res;
@@ -127,6 +133,14 @@ vector<model::MoveAction> FlyingController::update() {
 			}
 		}
 	}
+
+	for (int i = 0; i < groups.size(); i++)
+		while (groups[i].isFinished)
+		{
+			groups.erase(groups.begin() + i);
+			if (i == groups.size())
+				continue;
+		}
 
 	return moves;
 }

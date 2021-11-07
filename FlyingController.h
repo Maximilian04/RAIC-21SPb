@@ -42,6 +42,7 @@ public:
     vector<int> findPath(FlyingGroup group);
 
     int onFlightAt(int planet);
+    int onFlightTo(int planet);
 
     void send(int fr, int to, int num, optional<model::Resource> res, int safetyMode=AVOIDANCE);
 
