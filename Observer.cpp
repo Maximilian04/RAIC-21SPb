@@ -92,3 +92,4 @@ bool Observer::isOurs(int planet)
 int Observer::size()
 {
     return enemies.size();
+}
