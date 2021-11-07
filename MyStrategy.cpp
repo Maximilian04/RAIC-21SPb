@@ -91,13 +91,10 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 		vector<double> needWorkers(game.planets.size(), 0); //workers needed on a planet;
 		vector<double> upcomingWorkers(game.planets.size(), 0); //upcoming workers
-		for(auto fg: fc.groups)
-		{	
-			upcomingWorkers[fg.to] += fg.num;
-		}
+	
 		for(int i = 0; i < game.planets.size(); i++)
 		{
-			upcomingWorkers[i] += observer.ours[i]; //- observer.enemies[i];
+			upcomingWorkers[i] = observer.ours[i] + fc.onFlightTo(i); //- observer.enemies[i];
 		}
 
 		if (!prodCycle.isBuilt && role == WORKER) //ща будем базу строить
@@ -152,7 +149,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			{
 				needWorkers[i] -= upcomingWorkers[i];
 			}
-			cout << upcomingWorkers[0] << " " << needWorkers[0] << "\n";
+			//cout << upcomingWorkers[0] << " " << needWorkers[0] << "\n";
 
 			for(int i = 0; i < needWorkers.size(); i++)
 			{
