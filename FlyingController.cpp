@@ -131,7 +131,7 @@ vector<model::MoveAction> FlyingController::update() {
 	return moves;
 }
 
-void FlyingController::updateAdj(const model::Game& game) {
+void FlyingController::updateAdj(const model::Game& game, int maxTravelDistance) {
 	adj.clear();
 	for (int i = 0; i < game.planets.size(); ++i) {
 		adj.push_back({});
@@ -140,7 +140,7 @@ void FlyingController::updateAdj(const model::Game& game) {
 				continue;
 
 			if ((abs(game.planets[i].x - game.planets[j].x) + abs(game.planets[i].y - game.planets[j].y) <=
-				 game.maxTravelDistance))
+				 maxTravelDistance))
 				adj[i].push_back(j);
 		}
 	}
@@ -148,7 +148,7 @@ void FlyingController::updateAdj(const model::Game& game) {
 	safeAdj = adj;
 }
 
-void FlyingController::updateSafeAdj(const model::Game& game) {
+void FlyingController::updateSafeAdj(const model::Game& game, int maxTravelDistance) {
 	safeAdj.clear();
 	for (int i = 0; i < game.planets.size(); ++i) {
 		safeAdj.push_back({});
@@ -164,7 +164,7 @@ void FlyingController::updateSafeAdj(const model::Game& game) {
 				continue;
 
 			if ((abs(game.planets[i].x - game.planets[j].x) + abs(game.planets[i].y - game.planets[j].y) <=
-				 game.maxTravelDistance))
+				 maxTravelDistance))
 				safeAdj[i].push_back(j);
 		}
 	}

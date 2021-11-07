@@ -46,8 +46,8 @@ public:
     void send(int fr, int to, int num, optional<model::Resource> res, int safetyMode=AVOIDANCE);
 
     vector<model::MoveAction> update();
-    void updateAdj(const model::Game& game);
-    void updateSafeAdj(const model::Game& game);
+    void updateAdj(const model::Game& game, int maxTravelDistance);
+    void updateSafeAdj(const model::Game& game, int maxTravelDistance);
 };
 
 #endif //MYSTRATEGY_CPP_FLYING_CONTROLLER

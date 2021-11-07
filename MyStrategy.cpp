@@ -31,7 +31,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 	vector<model::BuildingAction> buildActions;
 
 	observer.update(game, planetDists);
-	fc.updateSafeAdj(game);
+	fc.updateSafeAdj(game, game.maxTravelDistance);
 
 	if (!prodCycle.isPlanned) {
 		prodCycle.planBuilding(game, logDists);
@@ -389,7 +389,7 @@ void MyStrategy::init(const model::Game& game) {
 
 
 	fc.setup(planetDists, &observer);
-	fc.updateAdj(game);
+	fc.updateAdj(game, game.maxTravelDistance);
 
 	observer.setup(game);
 
