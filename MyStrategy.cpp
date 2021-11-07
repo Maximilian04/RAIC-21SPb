@@ -230,12 +230,14 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			resetTimer = 0;
 			prodCycle.stackedPlanet = vector<bool>(prodCycle.stackedPlanet.size(), true);
 		}*/
+		#if 0
 		for (int id = 0; id < game.planets.size(); ++id) {
 			if (!game.planets[id].workerGroups.empty() &&
 				game.planets[id].workerGroups[0].playerIndex == game.myIndex) {
-				prodCycle.sendRobots()
+				prodCycle.sendRobots();
 			}
 		}
+		#endif
 	}
 
 	if (game.currentTick == 999) {

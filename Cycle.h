@@ -43,9 +43,6 @@ public:
 	vector<vector<int>> planetTypes; // 0-2 - RES, 3 - NO RES, 4 - ALL
 	vector<vector<int>> buildGraph; //graph where objects are planets connected with their 'neighbour' planets with the same type
 
-	double prodFactor;//не надо
-	int buildEff;//не надо
-
 	bool sendRobots(const model::Game& game, FlyingController& fc, Observer& observer, int planet);
 
 	vector<vector<int>> positionBuilding(const model::Game& game, const vector<vector<int>>& planetDists,

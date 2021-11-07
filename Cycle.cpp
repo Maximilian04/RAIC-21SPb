@@ -17,7 +17,7 @@ int planetType(const model::Game& game, int id) {
 
 Cycle::Cycle() : buildingPlanet(9), resourceTraffic(9, vector<double>(9)), isBuilt(false),
 				 orderedPlanet(CYCLE_BUILD_NUM, false), isPlanned(false),
-				 stackedPlanet(CYCLE_BUILD_NUM, false), prodFactor(1),
+				 /*stackedPlanet(CYCLE_BUILD_NUM, false), prodFactor(1),*/
 				 trafficCoeff() {
 
 	trafficCoeff[MINES].insert(pair<int, double>(FOUNDRY, 3.2));
