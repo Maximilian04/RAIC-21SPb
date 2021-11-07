@@ -91,46 +91,65 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 		vector<double> needWorkers(game.planets.size(), 0); //workers needed on a planet;
 		vector<double> upcomingWorkers(game.planets.size(), 0); //upcoming workers
+		vector<int> stoneUpcoming(game.planets.size(), 0);
 	
 		for(int i = 0; i < game.planets.size(); i++)
 		{
 			upcomingWorkers[i] = observer.ours[i] + fc.onFlightTo(i); //- observer.enemies[i];
+			if(game.planets[i].resources.count(model::Resource::STONE))
+			{
+				stoneUpcoming[i] = game.planets[i].resources.at(t2r(STONE));
+			}
+		}
+
+		for(auto fg: fc.groups)
+		{
+			if (!fg.isFinished && fg.path.size() != 1 && fg.res.has_value() && fg.res.value() == model::Resource::STONE)
+			{
+				stoneUpcoming[fg.to] += fg.num; //stone coming to the planet
+			}
+		}
+
+		for(int i = 0; i < prodCycle.buildingPlanet.size(); i++)
+		{
+			for(int j = 0; j < prodCycle.buildingPlanet[i].size(); j++)
+			{
+				cout << prodCycle.buildingPlanet[i][j] << ": " << stoneUpcoming[prodCycle.buildingPlanet[i][j]] << "\n";
+			}
 		}
 
 		if (!prodCycle.isBuilt && role == WORKER) //ща будем базу строить
 		{
-			static vector<bool> inProcess(buildingOrder.size(),
-										  false); //true if there is number of workers currently flying to build the ith building
 			int freestone = min(game.planets[homePlanet].resources.count(t2r(STONE)) ?
 								game.planets[homePlanet].resources.at(t2r(STONE)) : 0,
 								!game.planets[homePlanet].workerGroups.empty() ?
 								game.planets[homePlanet].workerGroups[0].number : 0);
 
 			for (int i = 0; i < buildingOrder.size(); i++) {
+				int price = game.buildingProperties.at(t2b(buildingOrder[i].second)).buildResources.at(
+						model::Resource::STONE);
 				if (isBuilt[i]) {
-					inProcess[i] = false;
 					if (game.planets[buildingOrder[i].first].workerGroups.size() > 0
 						&& game.planets[buildingOrder[i].first].workerGroups[0].playerIndex == game.myIndex) {
 						/*fc.send(buildingOrder[i].first, homePlanet,
 								game.planets[buildingOrder[i].first].workerGroups[0].number, {},
 								true); //if there are workers on a planet with a building then order them back*/
 					}
-				} else if (!inProcess[i]) {
-					int price = game.buildingProperties.at(t2b(buildingOrder[i].second)).buildResources.at(
-							model::Resource::STONE);
+				} else if (stoneUpcoming[buildingOrder[i].first] < price) {
 					if (freestone >= price) //if we can build it
 					{
-						fc.send(homePlanet, buildingOrder[i].first, price, model::Resource::STONE, true);
+						fc.send(homePlanet, buildingOrder[i].first, price, model::Resource::STONE, AVOIDANCE);
 						freestone -= price;
-						inProcess[i] = true;
 						buildActions.push_back(
 								model::BuildingAction(buildingOrder[i].first, t2b(buildingOrder[i].second)));
+
 					}
 					else{
-						needWorkers[homePlanet] += price-freestone; //if there is not enough stone then we need some workers back to the homePlanet
+						needWorkers[homePlanet] += price; //if there is not enough stone then we need some workers back to the homePlanet
 						freestone = 0;
 					}
 				} else {
+					needWorkers[buildingOrder[i].first] += 20;
 					buildActions.push_back(model::BuildingAction(buildingOrder[i].first, t2b(buildingOrder[i].second)));
 				}
 			}
@@ -138,19 +157,24 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 
 		if(role == WORKER)
 		{
-			for(int i = 0; i < prodCycle.buildingPlanet.size(); i++) //ordering workers to go to the buildings
+			if(prodCycle.isBuilt)
 			{
-				for(int j = 0; j < prodCycle.buildingPlanet[i].size(); j++)
+				for(int i = 0; i < prodCycle.buildingPlanet.size(); i++) //ordering workers to go to the buildings
 				{
-					//needWorkers[prodCycle.buildingPlanet[i][j]] = prodCycle.buildingWorkpower[i]/prodCycle.buildingPlanet[i].size()/1.2;
+					for(int j = 0; j < prodCycle.buildingPlanet[i].size(); j++)
+					{
+						needWorkers[prodCycle.buildingPlanet[i][j]] = prodCycle.buildingWorkpower[i]/prodCycle.buildingPlanet[i].size()/1.2;
+						//cout << prodCycle.buildingPlanet[i][j] << ":" << needWorkers[prodCycle.buildingPlanet[i][j]] << "\n";
+					}
 				}
 			}
+			//cout << upcomingWorkers[0] << " " << needWorkers[0] << "\n";
+
 			for(int i = 0; i < game.planets.size(); i++)
 			{
 				needWorkers[i] -= upcomingWorkers[i];
 			}
-			//cout << upcomingWorkers[0] << " " << needWorkers[0] << "\n";
-
+ 
 			for(int i = 0; i < needWorkers.size(); i++)
 			{
 				if(needWorkers[i] > 0)
@@ -163,7 +187,7 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 							int cantake = min((int)ceil(min(-needWorkers[id], needWorkers[i])), observer.ours[id]);
 							if(cantake != 0)
 							{
-								fc.send(id,i,cantake, {}, true);
+								fc.send(id,i,cantake, {}, AVOIDANCE);
 								needWorkers[i] -= cantake;
 								needWorkers[id] += cantake;
 							}
