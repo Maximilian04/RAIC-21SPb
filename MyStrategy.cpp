@@ -92,10 +92,10 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 		vector<double> needWorkers(game.planets.size(), 0); //workers needed on a planet;
 		vector<double> upcomingWorkers(game.planets.size(), 0); //upcoming workers
 		vector<int> stoneUpcoming(game.planets.size(), 0);
-	
+
 		for(int i = 0; i < game.planets.size(); i++)
 		{
-			upcomingWorkers[i] = max(observer.ours[i] + fc.onFlightTo(i),0); 
+			upcomingWorkers[i] = max(observer.ours[i] + fc.onFlightTo(i),0);
 			if(game.planets[i].resources.count(model::Resource::STONE))
 			{
 				stoneUpcoming[i] = game.planets[i].resources.at(t2r(STONE));
@@ -230,14 +230,14 @@ model::Action MyStrategy::getAction(const model::Game& game) {
 			resetTimer = 0;
 			prodCycle.stackedPlanet = vector<bool>(prodCycle.stackedPlanet.size(), true);
 		}*/
-		#if 0
-		for (int id = 0; id < game.planets.size(); ++id) {
-			if (!game.planets[id].workerGroups.empty() &&
-				game.planets[id].workerGroups[0].playerIndex == game.myIndex) {
-				prodCycle.sendRobots();
+
+		if (role == LOGIST) {
+			for (int id = 0; id < game.planets.size(); ++id) {
+				if (observer.ours[id] > 0) {
+					prodCycle.sendRobots(game, fc, observer, id);
+				}
 			}
 		}
-		#endif
 	}
 
 	if (game.currentTick == 999) {
@@ -319,13 +319,13 @@ void MyStrategy::init(const model::Game& game) {
 	logDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), INF));
 
 	for (int i = 0; i < game.planets.size(); ++i) {
-		for (int j = 0; j < game.planets.size(); ++j) {			
+		for (int j = 0; j < game.planets.size(); ++j) {
 			int d = abs(game.planets[i].x - game.planets[j].x) +
 					abs(game.planets[i].y - game.planets[j].y);
-			
+
 			if (d <= game.maxTravelDistance)
 				planetDists[i][j] = d;
-			
+
 			if (d <= game.maxTravelDistance + game.logisticsUpgrade)
 				logDists[i][j] = d;
 		}
