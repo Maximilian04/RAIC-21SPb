@@ -30,6 +30,9 @@ optional<model::MoveAction> FlyingGroup::step(vector<vector<int>>& d) {
 
 	if (timeToNext == 2)
 		path.erase(path.begin());
+
+	timeToNext--;
+	timeFromPrev++;
   
     return nullopt;
 }
