@@ -362,10 +362,7 @@ void MyStrategy::init(const model::Game& game) {
 	logDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), INF));
 
 	for (int i = 0; i < game.planets.size(); ++i) {
-		for (int j = 0; j < game.planets.size(); ++j) {
-			if (i == j)
-				continue;
-			
+		for (int j = 0; j < game.planets.size(); ++j) {			
 			int d = abs(game.planets[i].x - game.planets[j].x) +
 					abs(game.planets[i].y - game.planets[j].y);
 			
