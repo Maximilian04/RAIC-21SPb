@@ -392,5 +392,16 @@ void Cycle::planBuilding(const model::Game& game, const vector<vector<int>>& pla
 			resourceTraffic[i][j] = num; //from ith buildings to jth buildings goes num res
 		}
 	}
+
+	cout << "BASE:\n";
+	for(int i = 0; i < buildingPlanet.size(); i++)
+	{
+		cout << i << ":\n\t";
+		for(int j = 0; j < buildingPlanet[i].size(); j++)
+		{
+			cout << buildingPlanet[i][j] << " ";
+		}
+		cout << "\n";
+	}
 	isPlanned = true;
 }
