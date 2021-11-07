@@ -359,44 +359,42 @@ void MyStrategy::init(const model::Game& game) {
 
 	planetDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), 0));
 	logDists = vector<vector<int>>(game.planets.size(), vector<int>(game.planets.size(), 0));
-	int count = game.planets.size();
-	while (count--) {
-		for (int i = 0; i < game.planets.size(); ++i) {
-			for (int j = 0; j < game.planets.size(); ++j) {
-				if (i == j) continue;
-				if ((abs(game.planets[i].x - game.planets[j].x) +
-					 abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance)) {
-					planetDists[i][j] = planetDists[j][i] = abs(game.planets[i].x - game.planets[j].x) +
-															abs(game.planets[i].y - game.planets[j].y);
+	
+	for (int i = 0; i < game.planets.size(); ++i) {
+		for (int j = 0; j < game.planets.size(); ++j) {
+			if (i == j) continue;
+			if ((abs(game.planets[i].x - game.planets[j].x) +
+					abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance)) {
+				planetDists[i][j] = planetDists[j][i] = abs(game.planets[i].x - game.planets[j].x) +
+														abs(game.planets[i].y - game.planets[j].y);
 
-					for (int m = 0; m < game.planets.size(); ++m) {
-						if (m == i || m == j) continue;
-						if (planetDists[m][i] != 0 &&
-							(planetDists[m][j] == 0 || planetDists[m][j] > (planetDists[m][i] + planetDists[i][j]))) {
-							planetDists[m][j] = planetDists[j][m] = planetDists[m][i] + planetDists[i][j];
-						}
-						if (planetDists[m][j] != 0 &&
-							(planetDists[m][i] == 0 || planetDists[m][i] > (planetDists[m][j] + planetDists[i][j]))) {
-							planetDists[m][i] = planetDists[i][m] = planetDists[m][j] + planetDists[i][j];
-						}
+				for (int m = 0; m < game.planets.size(); ++m) {
+					if (m == i || m == j) continue;
+					if (planetDists[m][i] != 0 &&
+						(planetDists[m][j] == 0 || planetDists[m][j] > (planetDists[m][i] + planetDists[i][j]))) {
+						planetDists[m][j] = planetDists[j][m] = planetDists[m][i] + planetDists[i][j];
+					}
+					if (planetDists[m][j] != 0 &&
+						(planetDists[m][i] == 0 || planetDists[m][i] > (planetDists[m][j] + planetDists[i][j]))) {
+						planetDists[m][i] = planetDists[i][m] = planetDists[m][j] + planetDists[i][j];
 					}
 				}
+			}
 
-				if ((abs(game.planets[i].x - game.planets[j].x) +
-					 abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance + game.logisticsUpgrade)) {
-					logDists[i][j] = logDists[j][i] = abs(game.planets[i].x - game.planets[j].x) +
-													  abs(game.planets[i].y - game.planets[j].y);
+			if ((abs(game.planets[i].x - game.planets[j].x) +
+					abs(game.planets[i].y - game.planets[j].y) <= game.maxTravelDistance + game.logisticsUpgrade)) {
+				logDists[i][j] = logDists[j][i] = abs(game.planets[i].x - game.planets[j].x) +
+													abs(game.planets[i].y - game.planets[j].y);
 
-					for (int m = 0; m < game.planets.size(); ++m) {
-						if (m == i || m == j) continue;
-						if (logDists[m][i] != 0 &&
-							(logDists[m][j] == 0 || logDists[m][j] > (logDists[m][i] + logDists[i][j]))) {
-							logDists[m][j] = logDists[j][m] = logDists[m][i] + logDists[i][j];
-						}
-						if (logDists[m][j] != 0 &&
-							(logDists[m][i] == 0 || logDists[m][i] > (logDists[m][j] + logDists[i][j]))) {
-							logDists[m][i] = logDists[i][m] = logDists[m][j] + logDists[i][j];
-						}
+				for (int m = 0; m < game.planets.size(); ++m) {
+					if (m == i || m == j) continue;
+					if (logDists[m][i] != 0 &&
+						(logDists[m][j] == 0 || logDists[m][j] > (logDists[m][i] + logDists[i][j]))) {
+						logDists[m][j] = logDists[j][m] = logDists[m][i] + logDists[i][j];
+					}
+					if (logDists[m][j] != 0 &&
+						(logDists[m][i] == 0 || logDists[m][i] > (logDists[m][j] + logDists[i][j]))) {
+						logDists[m][i] = logDists[i][m] = logDists[m][j] + logDists[i][j];
 					}
 				}
 			}
